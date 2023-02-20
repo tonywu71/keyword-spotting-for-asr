@@ -1,0 +1,7 @@
+# python 3.10.8
+typer[all]
+pytest
+tqdm
+beautifulsoup4
+numpy
+matplotlib
