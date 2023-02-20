@@ -26,7 +26,7 @@ class Queries:
         self.queries = self._build_queries()
 
     
-    def _build_queries(self) -> Dict[str, str]:
+    def _build_queries(self) -> Dict[str, Query]:
         queries = {}
         
         with open(self.queries_filepath) as queries_file:
