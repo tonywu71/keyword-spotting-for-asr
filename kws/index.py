@@ -1,5 +1,6 @@
 from collections import defaultdict, namedtuple
 from pathlib import Path
+from typing import DefaultDict
 
 
 MAX_SECONDS_INTERVAL = 0.5
@@ -21,19 +22,21 @@ def decode_ctm_line(ctm_line: str) -> CTM_metadata:
 
 class Index:
     def __init__(self, ctm_filepath: str) -> None:
-        self.index = defaultdict(list)
         self.ctm_filepath = Path(ctm_filepath)
         assert self.ctm_filepath.is_file(), f"CTM file not found: {ctm_filepath}"
         
-        self.generate_index()
+        self.index = self._build_index()
+        
     
-
-    def generate_index(self):
+    def _build_index(self) -> DefaultDict[str, list]:
+        index = defaultdict(list)
+        
         with self.ctm_filepath.open("r") as f:
             for ctm_line in f.readlines():
                 ctm_metadata = decode_ctm_line(ctm_line)
-                self.index[ctm_metadata.word].append(ctm_metadata)
-        print(f"Index successfully generated from {self.ctm_filepath}")
+                index[ctm_metadata.word].append(ctm_metadata)
+        
+        return index
 
     
     def search(self):

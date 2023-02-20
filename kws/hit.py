@@ -26,6 +26,10 @@ class Hit:
                 f"tbeg={self.tbeg}, dur={self.dur}, score={self.score})")
     
     
+    def __repr__(self):
+        return self.__str__()
+        
+    
     def overlaps_with(self, hit_2: Hit) -> bool:
         start1, start2 = self.tbeg, hit_2.tbeg
         end1, end2 = start1 + self.dur, start2 + hit_2.dur
