@@ -5,8 +5,6 @@ from pathlib import Path
 
 from collections import defaultdict
 
-import pandas as pd
-
 from kws.hit import Hit, HitSequence
 from kws.query import Query
 from kws.kws_metadata import CTM_metadata
@@ -40,21 +38,6 @@ class Index:
                 index[ctm_metadata.word].append(ctm_metadata)
         
         return index
-
-    
-    def _aggregate_hits(self, list_hits: List[Hit]) -> Hit:
-        assert list_hits, "list_hits is empty"
-        file = list_hits[0].file
-        channel = list_hits[0].channel
-        
-        def gen_from_list_hits():
-            for hit in list_hits:
-                yield hit.channel, hit.tbeg, hit.dur, hit.score
-        
-        df = pd.DataFrame(gen_from_list_hits(), columns=["channel", "tbeg", "dur", "score"])
-        df_agg = df.agg({"tbeg": "min", "dur": "sum", "score": "prod"})
-        
-        return Hit(file=file, channel=channel, tbeg=df_agg["tbeg"], dur=df_agg["dur"], score=df_agg["score"])  # type: ignore
     
     
     def search(self, query: Query) -> List[HitSequence]:
@@ -81,7 +64,8 @@ class Index:
                 for w2_metadata in self.index[w2]:
                     w2_hit = Hit.from_ctm_metadata(w2_metadata)
                     if w2_hit.file == w1_hit.file:  # TODO: Re-index by file to increase speed
-                        if 0 <= w2_hit.tbeg - w1_hit.tbeg <= MAX_SECONDS_INTERVAL:
+                        # if w1_hit.tbeg + w1_hit.dur <= w2_hit.tbeg <= w1_hit.tbeg + w1_hit.dur - MAX_SECONDS_INTERVAL:  # TODO: Allow overlaps?
+                        if 0 < w2_hit.tbeg - w1_hit.tbeg <= MAX_SECONDS_INTERVAL:
                             hitseq.append(w2_hit)
                             stack.append(hitseq)
             else:
