@@ -1,13 +1,14 @@
 from __future__ import annotations
-from kws.index import CTM_metadata
+from kws.kws_metadata import CTM_metadata
 
 
 class Hit:
-    def __init__(self, file: str, channel: int, tbeg: float, dur: float, score: float):
+    def __init__(self, file: str, channel: int, tbeg: float, dur: float, word: str, score: float):
         self.file = file
         self.channel = channel
         self.tbeg = tbeg
         self.dur = dur
+        self.word = word
         self.score = score
 
     
@@ -18,12 +19,14 @@ class Hit:
                    channel=ctm_metadata.channel,
                    tbeg=ctm_metadata.tbeg,
                    dur=ctm_metadata.dur,
+                   word=ctm_metadata.word,
                    score=ctm_metadata.score)
 
     
     def __str__(self):
         return (f"Hit(file={self.file}, channel={self.channel}, "
-                f"tbeg={self.tbeg}, dur={self.dur}, score={self.score})")
+                f"tbeg={self.tbeg}, dur={self.dur}, word={self.word}, "
+                f"score={self.score})")
     
     
     def __repr__(self):
