@@ -65,6 +65,14 @@ class HitSequence:
         return next(iter(self.hits))
     
     
+    def append(self, hit: Hit) -> None:
+        self.hits.append(hit)
+    
+    
+    def __add__(self, hit: Hit) -> HitSequence:
+        return HitSequence(self.hits + [hit])
+    
+    
     def is_valid(self) -> bool:
         for hit_1, hit_2 in zip(self.hits, self.hits[1:]):
             if not hit_1.overlaps_with(hit_2):

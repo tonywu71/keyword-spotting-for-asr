@@ -1,4 +1,5 @@
-from typing import DefaultDict, List, Optional
+from typing import DefaultDict, List
+from collections import deque
 
 from pathlib import Path
 
@@ -31,7 +32,7 @@ class Index:
         self.index = self._build_index()
         
     
-    def _build_index(self) -> DefaultDict[str, list]:
+    def _build_index(self) -> DefaultDict[str, List[CTM_metadata]]:
         index = defaultdict(list)
         
         with self.ctm_filepath.open("r") as f:
@@ -57,33 +58,33 @@ class Index:
         return Hit(file=file, channel=channel, tbeg=df_agg["tbeg"], dur=df_agg["dur"], score=df_agg["score"])  # type: ignore
     
     
-    def search(self, query: Query) -> Optional[List[HitSequence]]:
-        if query.is_word:
-            if query.kwtext[0] in self.index:
-                ctm_metadata = self.index[query.kwtext[0]][0]
-                return [HitSequence([Hit.from_ctm_metadata(ctm_metadata)])]
-            else:
-                return None
+    def search(self, query: Query) -> List[HitSequence]:
+        list_hitseqs = []
+        stack = deque()
         
-        else:
-            if query.kwtext[0] not in self.index:
-                return None
+        # Initialize stack with first word:
+        for first_word_metadata in self.index[query.kwtext[0]]:
+            stack.append(HitSequence([Hit.from_ctm_metadata(first_word_metadata)]))
+        
+        while stack:
+            hitseq = stack.pop()
+            next_idx = len(hitseq)
             
+            # If we have a hit sequence:
+            if next_idx >= len(query.kwtext):
+                list_hitseqs.append(hitseq)
+                continue
+            
+            # Otherwise, we continue to build the current hit sequence:
+            w1_hit = hitseq[-1]
+            w2 = query.kwtext[next_idx]
+            if w2 in self.index:
+                for w2_metadata in self.index[w2]:
+                    w2_hit = Hit.from_ctm_metadata(w2_metadata)
+                    if w2_hit.tbeg - w1_hit.tbeg <= MAX_SECONDS_INTERVAL:
+                        hitseq.append(w2_hit)
+                        stack.append(hitseq)
             else:
-                list_hitseqs = []
-                
-                # TODO: Verify which elt of the list should be used (currently using the first one)
-                # My guess is that we have to try all possible w2 knowing the previous w1 -> sort of tree traversal
-                list_hits = [Hit.from_ctm_metadata(self.index[query.kwtext[0]][0])]
-                for w1, w2 in zip(query.kwtext, query.kwtext[1:]):
-                    if w1 not in self.index or w2 not in self.index:
-                        return None
-                    else:
-                        ctm_metadata_1 = self.index[w1][0]
-                        ctm_metadata_2 = self.index[w2][0]
-                        if ctm_metadata_2.tbeg - ctm_metadata_1.tbeg <= MAX_SECONDS_INTERVAL:
-                            list_hits.append(Hit.from_ctm_metadata(ctm_metadata_2))
-                        break
-                
-                list_hitseqs.append(HitSequence(list_hits))
-                return list_hitseqs
+                pass
+        
+        return list_hitseqs
