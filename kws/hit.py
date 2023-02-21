@@ -2,6 +2,8 @@ from __future__ import annotations
 from typing import Iterator, List
 from kws.kws_metadata import CTM_metadata
 
+from kws.constants import MAX_SECONDS_INTERVAL
+
 
 class Hit:
     def __init__(self, file: str, channel: int, tbeg: float, dur: float, word: str, score: float):
@@ -75,6 +77,6 @@ class HitSequence:
     
     def is_valid(self) -> bool:
         for hit_1, hit_2 in zip(self.hits, self.hits[1:]):
-            if not hit_1.overlaps_with(hit_2):
+            if hit_2.tbeg - hit_1.tbeg <= MAX_SECONDS_INTERVAL:
                 return False
         return True

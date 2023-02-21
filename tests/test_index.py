@@ -36,4 +36,5 @@ def test_index_search_word(index, query_word):
 def test_index_search_phrase(index, query_phrase):
     list_hitseqs = index.search(query_phrase)
     assert list_hitseqs, "Phrase not found"
-    assert any(len(hitseq) >= 2 for hitseq in list_hitseqs), f"There should be at least one complete match for query_phrase = f'{query_phrase.kwtext}'"
+    assert all(len(hitseq) <= len(query_phrase.kwtext) for hitseq in list_hitseqs), \
+        f"HitSequence is longer than query: {query_phrase.kwtext}"

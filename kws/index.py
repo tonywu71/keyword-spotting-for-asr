@@ -1,4 +1,4 @@
-from typing import DefaultDict, List
+from typing import DefaultDict, List, Tuple
 from collections import deque
 
 from pathlib import Path
@@ -11,8 +11,7 @@ from kws.hit import Hit, HitSequence
 from kws.query import Query
 from kws.kws_metadata import CTM_metadata
 
-
-MAX_SECONDS_INTERVAL = 0.5
+from kws.constants import MAX_SECONDS_INTERVAL
 
 
 def decode_ctm_line(ctm_line: str) -> CTM_metadata:
@@ -81,9 +80,10 @@ class Index:
             if w2 in self.index:
                 for w2_metadata in self.index[w2]:
                     w2_hit = Hit.from_ctm_metadata(w2_metadata)
-                    if w2_hit.tbeg - w1_hit.tbeg <= MAX_SECONDS_INTERVAL:
-                        hitseq.append(w2_hit)
-                        stack.append(hitseq)
+                    if w2_hit.file == w1_hit.file:  # TODO: Re-index by file to increase speed
+                        if 0 <= w2_hit.tbeg - w1_hit.tbeg <= MAX_SECONDS_INTERVAL:
+                            hitseq.append(w2_hit)
+                            stack.append(hitseq)
             else:
                 pass
         
