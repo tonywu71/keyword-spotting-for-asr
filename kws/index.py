@@ -6,7 +6,7 @@ from collections import defaultdict
 
 import pandas as pd
 
-from kws.hit import Hit
+from kws.hit import Hit, HitSequence
 from kws.query import Query
 from kws.kws_metadata import CTM_metadata
 
@@ -57,11 +57,11 @@ class Index:
         return Hit(file=file, channel=channel, tbeg=df_agg["tbeg"], dur=df_agg["dur"], score=df_agg["score"])  # type: ignore
     
     
-    def search(self, query: Query) -> Optional[List[Hit]]:
+    def search(self, query: Query) -> Optional[List[HitSequence]]:
         if query.is_word:
             if query.kwtext[0] in self.index:
                 ctm_metadata = self.index[query.kwtext[0]][0]
-                return [Hit.from_ctm_metadata(ctm_metadata)]
+                return [HitSequence([Hit.from_ctm_metadata(ctm_metadata)])]
             else:
                 return None
         
@@ -70,6 +70,8 @@ class Index:
                 return None
             
             else:
+                list_hitseqs = []
+                
                 # TODO: Verify which elt of the list should be used (currently using the first one)
                 # My guess is that we have to try all possible w2 knowing the previous w1 -> sort of tree traversal
                 list_hits = [Hit.from_ctm_metadata(self.index[query.kwtext[0]][0])]
@@ -82,4 +84,6 @@ class Index:
                         if ctm_metadata_2.tbeg - ctm_metadata_1.tbeg <= MAX_SECONDS_INTERVAL:
                             list_hits.append(Hit.from_ctm_metadata(ctm_metadata_2))
                         break
-                return list_hits
+                
+                list_hitseqs.append(HitSequence(list_hits))
+                return list_hitseqs

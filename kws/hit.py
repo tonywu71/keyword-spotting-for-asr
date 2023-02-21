@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Iterator, List
 from kws.kws_metadata import CTM_metadata
 
 
@@ -37,3 +38,35 @@ class Hit:
         start1, start2 = self.tbeg, hit_2.tbeg
         end1, end2 = start1 + self.dur, start2 + hit_2.dur
         return (start1 <= end2) and (start2 <= end1)
+
+
+class HitSequence:
+    def __init__(self, hits: List[Hit]):
+        self.hits = hits
+
+
+    def __len__(self) -> int:
+        return len(self.hits)
+    
+    
+    def __getitem__(self, index: int) -> Hit:
+        return self.hits[index]
+    
+    
+    def __contains__(self, hit: Hit) -> bool:
+        return hit in self.hits
+    
+    
+    def __iter__(self) -> Iterator[Hit]:
+        return iter(self.hits)
+    
+    
+    def __next__(self) -> Hit:
+        return next(iter(self.hits))
+    
+    
+    def is_valid(self) -> bool:
+        for hit_1, hit_2 in zip(self.hits, self.hits[1:]):
+            if not hit_1.overlaps_with(hit_2):
+                return False
+        return True

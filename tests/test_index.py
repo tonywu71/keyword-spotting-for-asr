@@ -28,8 +28,12 @@ def test_index_is_non_empty(index):
 
 
 def test_index_search_word(index, query_word):
-    assert index.search(query_word), "Word not found"
+    list_hitseqs = index.search(query_word)
+    assert list_hitseqs, "Word not found"
+    assert len(list_hitseqs) == 1, "HitSequence is not a singleton"
 
 
 def test_index_search_phrase(index, query_phrase):
-    assert len(index.search(query_phrase)) >= 2, "Phrase not found"
+    list_hitseqs = index.search(query_phrase)
+    assert list_hitseqs, "Phrase not found"
+    assert any(len(hitseq) >= 2 for hitseq in list_hitseqs), f"There should be at least one complete match for query_phrase = f'{query_phrase.kwtext}'"
