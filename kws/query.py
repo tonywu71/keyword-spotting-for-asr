@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 class Query:
     def __init__(self, kwid: str, kwtext: str):
         self.kwid = kwid
-        self.kwtext = kwtext.split()
+        self.kwtext = kwtext.lower().split()
         self.is_word = (len(self.kwtext)) == 1
 
     def __str__(self):

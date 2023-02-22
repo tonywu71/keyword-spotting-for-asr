@@ -12,9 +12,14 @@ from kws.kws_metadata import CTM_metadata
 from kws.constants import MAX_SECONDS_INTERVAL
 
 
+def preprocess_word(data: str):
+    return data.lower()
+
+
 def decode_ctm_line(ctm_line: str) -> CTM_metadata:
     try:
         file, channel, tbeg, dur, word, score = ctm_line.strip("\n").split()
+        word = preprocess_word(word)
         ctm_metadata = CTM_metadata(file, int(channel), float(tbeg), float(dur), word, float(score))
     except:
         raise ValueError(f"Error while generating index -> Invalid CTM line: {ctm_line}")
