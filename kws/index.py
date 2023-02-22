@@ -29,13 +29,13 @@ class Index:
         self.index = self._build_index()
         
     
-    def _build_index(self) -> DefaultDict[str, List[CTM_metadata]]:
-        index = defaultdict(list)
+    def _build_index(self) -> DefaultDict[str, DefaultDict[str, List[CTM_metadata]]]:
+        index = defaultdict(lambda: defaultdict(list))
         
         with self.ctm_filepath.open("r") as f:
             for ctm_line in f.readlines():
                 ctm_metadata = decode_ctm_line(ctm_line)
-                index[ctm_metadata.word].append(ctm_metadata)
+                index[ctm_metadata.file][ctm_metadata.word].append(ctm_metadata)
         
         return index
     
@@ -45,8 +45,11 @@ class Index:
         stack = deque()
         
         # Initialize stack with first word:
-        for first_word_metadata in self.index[query.kwtext[0]]:
-            stack.append(HitSequence([Hit.from_ctm_metadata(first_word_metadata)]))
+        first_word = query.kwtext[0]
+        for file in self.index.keys():
+            if first_word in self.index[file]:
+                for first_word_metadata in self.index[file][first_word]:
+                    stack.append(HitSequence([Hit.from_ctm_metadata(first_word_metadata)]))
         
         while stack:
             hitseq = stack.pop()
@@ -59,15 +62,16 @@ class Index:
             
             # Otherwise, we continue to build the current hit sequence:
             w1_hit = hitseq[-1]
+            current_file = w1_hit.file
             w2 = query.kwtext[next_idx]
-            if w2 in self.index:
-                for w2_metadata in self.index[w2]:
+            
+            if w2 in self.index[current_file]:
+                for w2_metadata in self.index[current_file][w2]:
                     w2_hit = Hit.from_ctm_metadata(w2_metadata)
-                    if w2_hit.file == w1_hit.file:  # TODO: Re-index by file to increase speed
-                        # if w1_hit.tbeg + w1_hit.dur <= w2_hit.tbeg <= w1_hit.tbeg + w1_hit.dur - MAX_SECONDS_INTERVAL:  # TODO: Allow overlaps?
-                        if 0 < w2_hit.tbeg - w1_hit.tbeg <= MAX_SECONDS_INTERVAL:
-                            hitseq.append(w2_hit)
-                            stack.append(hitseq)
+                    if 0 < w2_hit.tbeg - w1_hit.tbeg <= MAX_SECONDS_INTERVAL:
+                        hitseq.append(w2_hit)
+                        stack.append(hitseq)
+
             else:
                 pass
         
