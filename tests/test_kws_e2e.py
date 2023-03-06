@@ -20,7 +20,7 @@ def index():
     return index
 
 
-def test_e2e_index_search_from_reference(queries, index):
+def test_e2e_index_search_from_reference_all_1(queries, index):
     for kwid, query in tqdm(queries.queries.items()):
         list_hitseqs = index.search(query)
         assert all(histseq.score == 1. for histseq in list_hitseqs), f"Query score is not 1: {query.kwtext}"

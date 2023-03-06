@@ -9,7 +9,13 @@ from kws.constants import MAX_SECONDS_INTERVAL
 
 
 class Hit:
-    def __init__(self, file: str, channel: int, tbeg: float, dur: float, word: str, score: float):
+    def __init__(self,
+                 file: str,
+                 channel: int,
+                 tbeg: float,
+                 dur: float,
+                 word: str,
+                 score: float):
         self.file = file
         self.channel = channel
         self.tbeg = tbeg
@@ -30,13 +36,13 @@ class Hit:
 
     
     def __str__(self):
-        return (f"Hit(file={self.file}, channel={self.channel}, "
-                f"tbeg={self.tbeg}, dur={self.dur}, word={self.word}, "
-                f"score={self.score})")
+        return f'<kw file="{self.file}" channel="{self.channel}" tbeg="{self.tbeg}" dur="{self.dur}" score="{self.score}" decision="YES"/>\n'
     
     
     def __repr__(self):
-        return self.__str__()
+        return (f"Hit(file={self.file}, channel={self.channel}, "
+                f"tbeg={self.tbeg}, dur={self.dur}, word={self.word}, "
+                f"score={self.score})")
         
     
     def overlaps_with(self, hit_2: Hit) -> bool:
@@ -67,6 +73,14 @@ class HitSequence:
         self.dur = df_agg["dur"]
         self.words = df["word"].str.cat(sep=" ").split()
         self.score = df_agg["score"]
+    
+    
+    def __str__(self):
+        return "".join([str(hit) for hit in self.hits])
+    
+    
+    def __repr__(self) -> str:
+        return f"HitSequence(len={len(self.hits)}, file={self.file}, channel={self.channel}, tbeg={self.tbeg}, dur={self.dur}, words={self.words}, score={self.score})"
     
 
     def __len__(self) -> int:
