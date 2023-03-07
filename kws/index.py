@@ -74,9 +74,9 @@ class Index:
                 for w2_metadata in self.index[current_file][w2]:
                     w2_hit = Hit.from_ctm_metadata(w2_metadata)
                     if 0 < w2_hit.tbeg - w1_hit.tbeg <= MAX_SECONDS_INTERVAL:
-                        hitseq.append(w2_hit)
-                        stack.append(hitseq)
-
+                        hitseq_ = hitseq.copy()
+                        hitseq_.append(w2_hit)
+                        stack.append(hitseq_)
             else:
                 pass
         

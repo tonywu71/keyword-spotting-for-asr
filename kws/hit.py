@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Iterator, List
+import copy
 
 import pandas as pd
 
@@ -115,8 +116,22 @@ class HitSequence:
         self.score *= hit.score
     
     
+    def __add__(self, other: HitSequence) -> HitSequence:
+        assert self.file == other.file, "Cannot add a hit sequence from another file"
+        assert self.channel == other.channel, "Cannot add a hit sequence from another channel"
+        assert self.tbeg + self.dur + MAX_SECONDS_INTERVAL >= other.tbeg, "Cannot add a hit sequence that is too far from the current sequence"
+        assert self.tbeg + self.dur <= other.tbeg + other.dur + MAX_SECONDS_INTERVAL, "Cannot add a hit sequence that is too far from the current sequence"
+        
+        hits = self.hits + other.hits
+        return HitSequence(hits)
+    
+    
     def is_valid(self) -> bool:
         for hit_1, hit_2 in zip(self.hits, self.hits[1:]):
             if hit_2.tbeg - hit_1.tbeg <= MAX_SECONDS_INTERVAL:
                 return False
         return True
+
+
+    def copy(self) -> HitSequence:
+        return copy.deepcopy(self)
