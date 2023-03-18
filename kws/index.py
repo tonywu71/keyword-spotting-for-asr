@@ -1,4 +1,4 @@
-from typing import DefaultDict, List, Tuple
+from typing import DefaultDict, List
 from collections import deque
 
 from pathlib import Path
