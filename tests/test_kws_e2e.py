@@ -10,7 +10,7 @@ DEFAULT_TEST_CTM_FILEPATH = "lib/ctms/reference.ctm"
 
 @pytest.fixture
 def queries():
-    queries = Queries(queries_filepath=DEFAULT_TEST_QUERIES_FILEPATH)
+    queries = Queries.from_file(queries_filepath=DEFAULT_TEST_QUERIES_FILEPATH)
     return queries
 
 
