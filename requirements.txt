@@ -3,5 +3,7 @@ typer[all]
 pytest
 tqdm
 beautifulsoup4
+lxml
 numpy
+pandas
 matplotlib
