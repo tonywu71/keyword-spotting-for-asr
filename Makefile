@@ -12,3 +12,7 @@ eval-reference:
 
 apply_morph_to_ctm:
 	python apply_morph_to_ctm.py lib/ctms/reference.ctm lib/dicts/morph.dct reference-morph.ctm
+
+
+apply_morph_to_ctm:
+	python apply_morph_to_queries.py lib/kws/queries.xml lib/dicts/morph.dct queries-morph.xml

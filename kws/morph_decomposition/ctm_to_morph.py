@@ -3,19 +3,7 @@ from typing import Dict, List
 
 from kws.index import decode_ctm_line
 from kws.kws_metadata import CTM_metadata
-
-
-def get_word_to_morphs_dict(morph_filepath: str) -> Dict[str, List[str]]:
-    assert Path(morph_filepath).is_file(), f"Morph file not found: {morph_filepath}"
-    
-    word_to_morphs = {}
-    
-    with open(morph_filepath, "r") as f:
-        for line in f.readlines():
-            word, morphs = line.strip().split(maxsplit=1)
-            word_to_morphs[word] = morphs.split()
-    
-    return word_to_morphs
+from kws.morph_decomposition.utils import read_morph_dict
 
 
 def apply_morph_to_ctm_metadata(ctm_metadata: CTM_metadata,
@@ -52,7 +40,7 @@ def apply_morph_to_ctm_file(ctm_filepath: str,
                             output_filepath: str) -> None:
     assert Path(ctm_filepath).is_file(), f"CTM file not found: {ctm_filepath}"
     
-    word_to_morphs = get_word_to_morphs_dict(morph_filepath)
+    word_to_morphs = read_morph_dict(morph_filepath)
     
     list_new_ctm_metadata: List[CTM_metadata] = []
     

@@ -1,21 +1,7 @@
-from pathlib import Path
-import tempfile
 from kws.kws_metadata import CTM_metadata
-from kws.morph_decomposition.ctm_to_morph import get_word_to_morphs_dict, apply_morph_to_ctm_metadata
+from kws.morph_decomposition.ctm_to_morph import read_morph_dict, apply_morph_to_ctm_metadata
 
-def test_get_word_to_morphs_dict():
-    with tempfile.TemporaryDirectory() as temp_dir:
-        temp_file = Path(temp_dir) / "morphs.txt"
-        with open(temp_file, "w") as f:
-            f.write("a   a_1\n")
-            f.write("b   b_1 b_2\n")
-            f.write("c   c_1 c_2 c_3\n")
-        
-        word_to_morphs = get_word_to_morphs_dict(str(temp_file))
-        
-        assert word_to_morphs["a"] == ["a_1"]
-        assert word_to_morphs["b"] == ["b_1", "b_2"]
-        assert word_to_morphs["c"] == ["c_1", "c_2", "c_3"]
+
 
 
 def test_apply_morph_to_ctm_metadata():
