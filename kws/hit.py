@@ -137,7 +137,7 @@ class HitSequence:
         return copy.deepcopy(self)
 
     
-    def normalize_scores(self, gamma: float) -> None:
+    def normalize_scores(self, gamma: float=1.0) -> None:
         total_score = sum([hit.score ** gamma for hit in self.hits])
         for hit in self.hits:
             hit.score = hit.score ** gamma / total_score
