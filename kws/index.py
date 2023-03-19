@@ -96,11 +96,7 @@ class Index:
     
     def _oov_search(self,
                     query: Query,
-                    grapheme_confusion: GraphemeConfusions,
-                    sanity_check: bool=True) -> List[HitSequence]:
-        if sanity_check:  # disable for performance speedup
-            assert grapheme_confusion.iv_set == set(self.index.keys()), \
-                "Grapheme confusion set must be the same as the index set"
+                    grapheme_confusion: GraphemeConfusions) -> List[HitSequence]:
         
         list_hitseqs: List[HitSequence]= []
         stack = deque()

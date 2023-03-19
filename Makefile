@@ -3,15 +3,15 @@ score-reference:
 
 
 score-reference-normalized:
-	python search.py lib/kws/queries.xml lib/ctms/reference.ctm reference.xml --normalize_scores
+	python search.py lib/kws/queries.xml lib/ctms/reference.ctm reference.xml --normalize-scores
 
 
 score-reference-grapheme_confusion:
-	python search.py lib/kws/queries.xml lib/ctms/reference.ctm reference.xml --use_grapheme_confusion
+	python search.py lib/kws/queries.xml lib/ctms/reference.ctm reference.xml --use-grapheme-confusion
 
 
 score-reference-normalized-grapheme_confusion:
-	python search.py lib/kws/queries.xml lib/ctms/reference.ctm reference.xml --normalize_scores --use_grapheme_confusion
+	python search.py lib/kws/queries.xml lib/ctms/reference.ctm reference.xml --normalize-scores --use-grapheme-confusion
 
 
 eval-reference:

@@ -2,7 +2,6 @@ from collections import defaultdict
 from pathlib import Path
 from typing import DefaultDict, Set
 from copy import deepcopy
-from toolz import valmap
 
 
 def _normalize_grapheme_confusion_dict(grapheme_confusion_dict: DefaultDict[str, DefaultDict[str, float]]) \
@@ -11,7 +10,8 @@ def _normalize_grapheme_confusion_dict(grapheme_confusion_dict: DefaultDict[str,
     
     for c1 in grapheme_confusion_dict:
         total = sum(grapheme_confusion_dict[c1].values())
-        grapheme_confusion_dict[c1] = valmap(lambda x: x / total, grapheme_confusion_dict[c1])  # type: ignore
+        for c2 in grapheme_confusion_dict[c1]:
+            grapheme_confusion_dict[c1][c2] /= total
     
     return grapheme_confusion_dict
 

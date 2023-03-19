@@ -5,8 +5,7 @@ from kws.grapheme_confusion.utils import get_iv_set, load_grapheme_confusion
 class GraphemeConfusions:
     def __init__(self,
                  grapheme_confusion_filepath: str,
-                 ctm_filepath: str,
-                 min_dist: int = DEFAULT_MIN_DIST):
+                 ctm_filepath: str):
         self.confusion_dict = load_grapheme_confusion(grapheme_confusion_filepath)
         self.iv_set = get_iv_set(ctm_filepath)
     
