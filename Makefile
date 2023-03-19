@@ -2,6 +2,18 @@ score-reference:
 	python search.py lib/kws/queries.xml lib/ctms/reference.ctm reference.xml
 
 
+score-reference-normalized:
+	python search.py lib/kws/queries.xml lib/ctms/reference.ctm reference.xml --normalize_scores
+
+
+score-reference-grapheme_confusion:
+	python search.py lib/kws/queries.xml lib/ctms/reference.ctm reference.xml --use_grapheme_confusion
+
+
+score-reference-normalized-grapheme_confusion:
+	python search.py lib/kws/queries.xml lib/ctms/reference.ctm reference.xml --normalize_scores --use_grapheme_confusion
+
+
 eval-reference:
 	rm -rf scoring/reference \
 	scripts/score.sh output/reference.xml scoring \
