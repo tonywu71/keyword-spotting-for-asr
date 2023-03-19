@@ -45,8 +45,11 @@ class Index:
         return index
     
     
-    def search(self, query: Query) -> List[HitSequence]:
-        list_hitseqs = []
+    def search(self,
+               query: Query,
+               normalize_scores: bool=False,
+               gamma: float=1.0) -> List[HitSequence]:
+        list_hitseqs: List[HitSequence] = []
         stack = deque()
         
         # Initialize stack with first word:
@@ -79,5 +82,9 @@ class Index:
                         stack.append(hitseq_)
             else:
                 pass
+        
+        if normalize_scores:
+            for hitseq in list_hitseqs:
+                hitseq.normalize_scores(gamma=gamma)
         
         return list_hitseqs
