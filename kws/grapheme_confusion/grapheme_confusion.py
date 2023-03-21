@@ -14,7 +14,7 @@ class GraphemeConfusions:
         return word in self.iv_set
 
     
-    def closest_iv_word(self, oov_word) -> Optional[str]:
+    def get_closest_iv_word(self, oov_word) -> Optional[str]:
         min_dist_iv_word = None
         min_dist = float("inf")
         for iv_word in self.iv_set:

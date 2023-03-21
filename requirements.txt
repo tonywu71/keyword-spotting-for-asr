@@ -2,7 +2,6 @@
 typer[all]
 pytest
 tqdm
-toolz
 beautifulsoup4
 lxml
 numpy
