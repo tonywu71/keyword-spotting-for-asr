@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Iterator, List
+from typing import Iterator, List, Optional
 import copy
 
 import pandas as pd
@@ -16,13 +16,15 @@ class Hit:
                  tbeg: float,
                  dur: float,
                  word: str,
-                 score: float):
+                 score: float,
+                 next_word_in_ctm: Optional[str]=None):
         self.file = file
         self.channel = channel
         self.tbeg = tbeg
         self.dur = dur
         self.word = word
         self.score = score
+        self.next_word_in_ctm = next_word_in_ctm  # this attribute doesn't caracterize a hit, but is useful for the search algorithm
 
     
     @classmethod
@@ -33,17 +35,20 @@ class Hit:
                    tbeg=ctm_metadata.tbeg,
                    dur=ctm_metadata.dur,
                    word=ctm_metadata.word,
-                   score=ctm_metadata.score)
+                   score=ctm_metadata.score,
+                   next_word_in_ctm=ctm_metadata.next_word)
 
     
     def __str__(self):
+        # Note: next_word_in_ctm is not printed because it doesn't caracterize a hit
         return f'<kw file="{self.file}" channel="{self.channel}" tbeg="{self.tbeg:.2f}" dur="{self.dur:.2f}" score="{self.score:.6f}" decision="YES"/>\n'
     
     
     def __repr__(self):
+        # Note: next_word_in_ctm is not printed because it doesn't caracterize a hit
         return (f"Hit(file={self.file}, channel={self.channel}, "
                 f"tbeg={self.tbeg}, dur={self.dur}, word={self.word}, "
-                f"score={self.score})")
+                f"score={self.score}), next_word_in_ctm={self.next_word_in_ctm})")
         
     
     def overlaps_with(self, hit_2: Hit) -> bool:

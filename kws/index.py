@@ -1,4 +1,4 @@
-from typing import DefaultDict, List, Optional
+from typing import DefaultDict, Deque, List, Optional
 from collections import deque
 
 from pathlib import Path
@@ -17,11 +17,11 @@ def preprocess_word(data: str):
     return data.lower()
 
 
-def decode_ctm_line(ctm_line: str) -> CTM_metadata:
+def decode_ctm_line(ctm_line: str, next_word: Optional[str]=None) -> CTM_metadata:
     try:
         file, channel, tbeg, dur, word, score = ctm_line.strip("\n").split()
         word = preprocess_word(word)
-        ctm_metadata = CTM_metadata(file, int(channel), float(tbeg), float(dur), word, float(score))
+        ctm_metadata = CTM_metadata(file, int(channel), float(tbeg), float(dur), word, float(score), next_word=next_word)
     except:
         raise ValueError(f"Error while generating index -> Invalid CTM line: {ctm_line}")
     return ctm_metadata
@@ -33,7 +33,8 @@ def _get_posterior_metadata(ctm_metadata: CTM_metadata, posterior: float) -> CTM
                                           tbeg=ctm_metadata.tbeg,
                                           dur=ctm_metadata.dur,
                                           word=ctm_metadata.word,
-                                          score=ctm_metadata.score*posterior)
+                                          score=ctm_metadata.score*posterior,
+                                          next_word=ctm_metadata.next_word)
     return ctm_posterior_metadata
 
 
@@ -49,8 +50,10 @@ class Index:
         index = defaultdict(lambda: defaultdict(list))
         
         with self.ctm_filepath.open("r") as f:
-            for ctm_line in f.readlines():
-                ctm_metadata = decode_ctm_line(ctm_line)
+            lines = f.readlines()
+            for ctm_line, next_ctm_line in zip(lines, lines[1:]):
+                next_ctm_metadata = decode_ctm_line(next_ctm_line)
+                ctm_metadata = decode_ctm_line(ctm_line, next_word=next_ctm_metadata.word)
                 index[ctm_metadata.file][ctm_metadata.word].append(ctm_metadata)
         
         return index
@@ -58,7 +61,7 @@ class Index:
     
     def _iv_search(self, query: Query) -> List[HitSequence]:
         list_hitseqs: List[HitSequence] = []
-        stack = deque()
+        stack: Deque[HitSequence] = deque()
         
         # Initialize stack with first word:
         first_word = query.kwtext[0]
@@ -81,7 +84,7 @@ class Index:
             current_file = w1_hit.file
             w2 = query.kwtext[next_idx]
             
-            if w2 in self.index[current_file]:
+            if w2 == w1_hit.next_word_in_ctm:  # Note: This condition implies (w2 in self.index[current_file]) but the reciprocal is not necessarily true.
                 for w2_metadata in self.index[current_file][w2]:
                     w2_hit = Hit.from_ctm_metadata(w2_metadata)
                     if w2_hit.tbeg > w1_hit.tbeg and w2_hit.tbeg - (w1_hit.tbeg + w1_hit.dur) <= MAX_SECONDS_INTERVAL:  # allow overlap

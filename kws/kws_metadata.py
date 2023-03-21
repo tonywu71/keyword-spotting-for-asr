@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 @dataclass(frozen=True)
 class CTM_metadata():
@@ -14,3 +15,4 @@ class CTM_metadata():
     dur: float
     word: str
     score: float
+    next_word: Optional[str]=None
