@@ -102,7 +102,7 @@ class Index:
                     grapheme_confusion: GraphemeConfusions) -> List[HitSequence]:
         
         list_hitseqs: List[HitSequence]= []
-        stack = deque()
+        stack: Deque[HitSequence] = deque()
         
         # Initialize stack with first word:
         first_word = query.kwtext[0]
@@ -111,15 +111,16 @@ class Index:
             
             if first_word in self.index[file]:
                 for first_word_metadata in self.index[file][first_word]:
-                    stack.append(HitSequence([Hit.from_ctm_metadata(first_word_metadata)]))  # TODO: Check if the appended object if correct
+                    stack.append(HitSequence([Hit.from_ctm_metadata(first_word_metadata)]))
             
             else:  # If first word is OOV, we try to find it with grapheme confusion:
-                closest_iv_word = grapheme_confusion.get_closest_iv_word(first_word)
+                closest_iv_word = None
+                while closest_iv_word not in self.index[file]:
+                    closest_iv_word = grapheme_confusion.get_closest_iv_word(first_word, subset=set(self.index[file].keys()))
                 
                 if closest_iv_word is None:
-                    # Note: With the current implementation, this should never happen.
-                    return list_hitseqs
-
+                    continue  # If we cannot find a closest IV word, we skip this file.
+                
                 if closest_iv_word in self.index[file]:
                     posterior = grapheme_confusion._similarity_prob(first_word, closest_iv_word)
                     for first_word_metadata in self.index[file][closest_iv_word]:
@@ -141,16 +142,18 @@ class Index:
             current_file = w1_hit.file
             w2 = query.kwtext[next_idx]
             
-            if w2 in self.index[current_file]:
+            if w2 == w1_hit.next_word_in_ctm:  # Note: This condition implies (w2 in self.index[current_file]) but the reciprocal is not necessarily true.
                 for first_word_metadata in self.index[current_file][w2]:
                     w2_hit = Hit.from_ctm_metadata(first_word_metadata)
-                    if 0 < w2_hit.tbeg - w1_hit.tbeg <= MAX_SECONDS_INTERVAL:
+                    if w2_hit.tbeg > w1_hit.tbeg and w2_hit.tbeg - (w1_hit.tbeg + w1_hit.dur) <= MAX_SECONDS_INTERVAL:  # allow overlap
                         hitseq_ = hitseq.copy()
                         hitseq_.append(w2_hit)
                         stack.append(hitseq_)
             
             else:
-                closest_iv_word = grapheme_confusion.get_closest_iv_word(w2)
+                closest_iv_word = grapheme_confusion.get_closest_iv_word(first_word, subset=set(self.index[w1_hit.file].keys()))
+                if closest_iv_word is None:
+                    continue  # If we cannot find a closest IV word, we skip this file.
                 
                 if closest_iv_word is None:
                     # Note: With the current implementation, this should never happen.
@@ -160,7 +163,7 @@ class Index:
                 for first_word_metadata in self.index[current_file][closest_iv_word]:
                     w2_metadata_posterior = _get_posterior_metadata(first_word_metadata, posterior)
                     w2_hit = Hit.from_ctm_metadata(w2_metadata_posterior)
-                    if 0 < w2_hit.tbeg - w1_hit.tbeg <= MAX_SECONDS_INTERVAL:
+                    if w2_hit.tbeg > w1_hit.tbeg and w2_hit.tbeg - (w1_hit.tbeg + w1_hit.dur) <= MAX_SECONDS_INTERVAL:  # allow overlap
                         hitseq_ = hitseq.copy()
                         hitseq_.append(w2_hit)
                         stack.append(hitseq_)

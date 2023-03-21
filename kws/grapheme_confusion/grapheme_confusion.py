@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Set
 from kws.grapheme_confusion.utils import get_iv_set, load_grapheme_confusion
 
 
@@ -14,10 +14,15 @@ class GraphemeConfusions:
         return word in self.iv_set
 
     
-    def get_closest_iv_word(self, oov_word) -> Optional[str]:
+    def get_closest_iv_word(self, oov_word: str, subset: Optional[Set[str]]=None) -> Optional[str]:
+        if subset is not None:
+            iv_set = self.iv_set.intersection(subset)
+        else:
+            iv_set = self.iv_set
+        
         min_dist_iv_word = None
         min_dist = float("inf")
-        for iv_word in self.iv_set:
+        for iv_word in iv_set:
             dist = self._weighted_lev_distance(oov_word, iv_word)
             if dist < min_dist:
                 min_dist = dist

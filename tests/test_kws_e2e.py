@@ -60,12 +60,12 @@ def test_e2e_index_search_score_normalization_all_1(queries: Queries, index: Ind
             assert hitseq.score == 1.0, f"Hit sequence score is not 1: {query.kwtext}"
 
 
-# def test_e2e_index_search_grapheme_confusion_all_1(queries: Queries, index: Index):
-#     grapheme_confusion = GraphemeConfusions(
-#             grapheme_confusion_filepath=str(DEFAULT_GRAPHEME_CONFUSION_FILEPATH),
-#             ctm_filepath=DEFAULT_TEST_CTM_FILEPATH)
+def test_e2e_index_search_grapheme_confusion_all_1(queries: Queries, index: Index):
+    grapheme_confusion = GraphemeConfusions(
+            grapheme_confusion_filepath=str(DEFAULT_GRAPHEME_CONFUSION_FILEPATH),
+            ctm_filepath=DEFAULT_TEST_CTM_FILEPATH)
     
-#     for kwid, query in tqdm(queries.queries.items()):
-#         list_hitseqs = index.search(query, grapheme_confusion=grapheme_confusion)
-#         for hitseq in list_hitseqs:
-#             assert hitseq.score == 1.0, f"Hit sequence score is not 1: {query.kwtext}"
+    for kwid, query in tqdm(queries.queries.items()):
+        list_hitseqs = index.search(query, grapheme_confusion=grapheme_confusion)
+        for hitseq in list_hitseqs:
+            assert hitseq.score == 1.0, f"Hit sequence score is not 1: {query.kwtext}"
