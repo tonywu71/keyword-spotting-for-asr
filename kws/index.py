@@ -84,7 +84,7 @@ class Index:
             if w2 in self.index[current_file]:
                 for w2_metadata in self.index[current_file][w2]:
                     w2_hit = Hit.from_ctm_metadata(w2_metadata)
-                    if 0 < w2_hit.tbeg - w1_hit.tbeg <= MAX_SECONDS_INTERVAL:
+                    if w2_hit.tbeg > w1_hit.tbeg and w2_hit.tbeg - (w1_hit.tbeg + w1_hit.dur) <= MAX_SECONDS_INTERVAL:  # allow overlap
                         hitseq_ = hitseq.copy()
                         hitseq_.append(w2_hit)
                         stack.append(hitseq_)
