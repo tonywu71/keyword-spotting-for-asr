@@ -53,7 +53,7 @@ def apply_morph_to_ctm_file(ctm_filepath: str,
     # Format new CTM file:
     new_ctm = ""
     for ctm_metadata in list_new_ctm_metadata:
-        new_line = f"{ctm_metadata.file} {ctm_metadata.channel} {ctm_metadata.tbeg:.2f} {ctm_metadata.dur:.2f} {ctm_metadata.word} {ctm_metadata.score:.4f}\n"
+        new_line = f"{ctm_metadata.file} {ctm_metadata.channel} {ctm_metadata.tbeg:.2f} {ctm_metadata.dur:.2f} {ctm_metadata.word} {ctm_metadata.score:.6f}\n"
         new_ctm += new_line
 
     # Save new CTM file:

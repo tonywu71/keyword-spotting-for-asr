@@ -37,7 +37,7 @@ class Hit:
 
     
     def __str__(self):
-        return f'<kw file="{self.file}" channel="{self.channel}" tbeg="{self.tbeg}" dur="{self.dur}" score="{self.score}" decision="YES"/>\n'
+        return f'<kw file="{self.file}" channel="{self.channel}" tbeg="{self.tbeg:.2f}" dur="{self.dur:.2f}" score="{self.score:.6f}" decision="YES"/>\n'
     
     
     def __repr__(self):
@@ -77,7 +77,7 @@ class HitSequence:
     
     
     def __str__(self):
-        return "".join([str(hit) for hit in self.hits])
+        return f'<kw file="{self.file}" channel="{self.channel}" tbeg="{self.tbeg:.2f}" dur="{self.dur:.2f}" score="{self.score:.6f}" decision="YES"/>\n'
     
     
     def __repr__(self) -> str:
