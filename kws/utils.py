@@ -8,11 +8,12 @@ HIT_FOOTER = '</detected_kwlist>\n'
 # Note: HIT_HEADER contains a kwid field, which should be filled in using the format method
 
 
-def format_single_query(kwid: str, histseq: HitSequence):
+def format_single_query(kwid: str, list_hitseq: List[HitSequence]):
     output = ""
     
     output += HIT_HEADER.format(kwid=kwid)
-    output += str(histseq)
+    for hitseq in list_hitseq:
+        output += str(hitseq)
     output += HIT_FOOTER
     
     return output
@@ -23,9 +24,8 @@ def format_all_queries(kws_to_hitseqs: Dict[str, List[HitSequence]]) -> str:
     
     output += HITS_FILE_HEADER
     
-    for kwid, list_hitseqs in kws_to_hitseqs.items():
-        for histseq in list_hitseqs:
-            output += format_single_query(kwid, histseq)
+    for kwid, list_hitseq in kws_to_hitseqs.items():
+        output += format_single_query(kwid, list_hitseq)
             
     output += HITS_FILE_FOOTER
     
