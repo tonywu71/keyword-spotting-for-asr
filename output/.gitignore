@@ -1,2 +1,4 @@
 reference.xml
 reference-normalized.xml
+reference-grapheme_confusion.xml
+decode-grapheme_confusion.xml
