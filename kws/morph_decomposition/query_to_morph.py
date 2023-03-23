@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Dict, List
 
-from kws.morph_decomposition.utils import read_morph_dict
+from kws.morph_decomposition.utils import load_morph_dict
 from kws.query import Query, Queries
 
 
@@ -23,7 +23,7 @@ def apply_morph_to_queries_file(queries_filepath: str,
     assert Path(queries_filepath).is_file(), f"Query file not found: {queries_filepath}"
     queries = Queries.from_file(queries_filepath)
     
-    word_to_morphs = read_morph_dict(morph_filepath)
+    word_to_morphs = load_morph_dict(morph_filepath)
     
     list_new_queries: List[Query] = []
     

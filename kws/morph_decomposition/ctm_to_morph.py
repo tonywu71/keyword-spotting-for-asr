@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from kws.index import decode_ctm_line
 from kws.kws_metadata import CTM_metadata
-from kws.morph_decomposition.utils import read_morph_dict
+from kws.morph_decomposition.utils import load_morph_dict
 
 
 def apply_morph_to_ctm_metadata(ctm_metadata: CTM_metadata,
@@ -40,7 +40,7 @@ def apply_morph_to_ctm_file(ctm_filepath: str,
                             output_filepath: str) -> None:
     assert Path(ctm_filepath).is_file(), f"CTM file not found: {ctm_filepath}"
     
-    word_to_morphs = read_morph_dict(morph_filepath)
+    word_to_morphs = load_morph_dict(morph_filepath)
     
     list_new_ctm_metadata: List[CTM_metadata] = []
     
@@ -53,7 +53,7 @@ def apply_morph_to_ctm_file(ctm_filepath: str,
     # Format new CTM file:
     new_ctm = ""
     for ctm_metadata in list_new_ctm_metadata:
-        new_line = f"{ctm_metadata.file} {ctm_metadata.channel} {ctm_metadata.tbeg:.2f} {ctm_metadata.dur:.2f} {ctm_metadata.word} {ctm_metadata.score:.4f}\n"
+        new_line = f"{ctm_metadata.file} {ctm_metadata.channel} {ctm_metadata.tbeg:.2f} {ctm_metadata.dur:.2f} {ctm_metadata.word} {ctm_metadata.score:.6f}\n"
         new_ctm += new_line
 
     # Save new CTM file:
