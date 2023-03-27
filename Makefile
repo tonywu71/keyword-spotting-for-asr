@@ -26,6 +26,14 @@ eval-reference:
 	&& scripts/termselect.sh lib/terms/ivoov.map output/reference.xml scoring oov
 
 
+eval-reference-grapheme_confusion:
+	rm -rf scoring/* \
+	&& scripts/score.sh output/reference-grapheme_confusion.xml scoring \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/reference-grapheme_confusion.xml scoring all \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/reference-grapheme_confusion.xml scoring iv \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/reference-grapheme_confusion.xml scoring oov
+
+
 eval-decode:
 	rm -rf scoring/* \
 	&& scripts/score.sh output/decode.xml scoring \
