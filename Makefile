@@ -1,3 +1,5 @@
+# ---- SCORING ----
+
 score-reference:
 	python search.py lib/kws/queries.xml lib/ctms/reference.ctm reference.xml
 
@@ -25,6 +27,11 @@ score-decode:
 score-decode-morph:
 	python search.py lib/kws/queries-morph.xml lib/ctms/decode-morph.ctm decode-morph.xml
 
+
+
+
+
+# ---- EVALUATION ----
 
 eval-reference:
 	rm -rf scoring/* \
