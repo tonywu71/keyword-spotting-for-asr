@@ -28,6 +28,8 @@ score-decode-morph:
 	python search.py lib/kws/queries-morph.xml lib/ctms/decode-morph.ctm decode-morph.xml
 
 
+score-decode-normalized:
+	python search.py lib/kws/queries.xml lib/ctms/decode.ctm decode-normalized.xml --normalize-scores
 
 
 
@@ -63,6 +65,14 @@ eval-decode-morph:
 	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph.xml scoring all \
 	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph.xml scoring iv \
 	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph.xml scoring oov
+
+
+eval-decode-normalized:
+	rm -rf scoring/* \
+	&& scripts/score.sh output/decode-normalized.xml scoring \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-normalized.xml scoring all \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-normalized.xml scoring iv \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-normalized.xml scoring oov
 
 
 eval-decode-grapheme_confusion:
