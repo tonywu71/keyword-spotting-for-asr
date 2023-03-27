@@ -4,7 +4,7 @@ import typer
 
 from pathlib import Path
 from tqdm import tqdm
-from kws.grapheme_confusion.grapheme_confusion import GraphemeConfusions
+from kws.grapheme_confusion.grapheme_confusion import GraphemeConfusion
 from kws.hit import HitSequence
 
 from kws.index import Index
@@ -31,13 +31,13 @@ def main(queries_filepath: str,
     Search for queries in CTM file and write output to file.
     """
     queries = Queries.from_file(queries_filepath)
-    index = Index(ctm_filepath)
+    index = Index(ctm_filepath=ctm_filepath)
     
-    kws_to_hitseqs: Dict[str, List[HitSequence]] = {}
+    kwid_to_hitseqs: Dict[str, List[HitSequence]] = {}
     
     # If necessary, load grapheme confusion:
     if use_grapheme_confusion:
-        grapheme_confusion = GraphemeConfusions(
+        grapheme_confusion = GraphemeConfusion(
             grapheme_confusion_filepath=str(DEFAULT_GRAPHEME_CONFUSION_FILEPATH),
             ctm_filepath=ctm_filepath)
     else:
@@ -53,7 +53,7 @@ def main(queries_filepath: str,
                                         normalize_scores=normalize_scores,
                                         gamma=gamma,
                                         grapheme_confusion=grapheme_confusion)
-            kws_to_hitseqs[kwid] = list_hitseqs
+            kwid_to_hitseqs[kwid] = list_hitseqs
     
     else:
         def etl_fun(x: Tuple[str, Query]) -> Tuple[str, List[HitSequence]]:
@@ -72,10 +72,10 @@ def main(queries_filepath: str,
                 results = pool.imap_unordered(etl_fun, queries.queries.items())
         
         for kwid, list_hitseqs in results:
-            kws_to_hitseqs[kwid] = list_hitseqs
+            kwid_to_hitseqs[kwid] = list_hitseqs
     
     
-    output = format_all_queries(kws_to_hitseqs)
+    output = format_all_queries(kwid_to_hitseqs)
     
     output_filepath = OUTPUT_DIR / output_filename
     with output_filepath.open("w") as output_file:

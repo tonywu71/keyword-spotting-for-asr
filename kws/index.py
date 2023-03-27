@@ -4,7 +4,7 @@ from collections import deque
 from pathlib import Path
 
 from collections import defaultdict
-from kws.grapheme_confusion.grapheme_confusion import GraphemeConfusions
+from kws.grapheme_confusion.grapheme_confusion import GraphemeConfusion
 
 from kws.hit import Hit, HitSequence
 from kws.query import Query
@@ -59,7 +59,11 @@ class Index:
         return index
     
     
-    def _iv_search(self, query: Query) -> List[HitSequence]:
+    def _search(self, query: Query) -> List[HitSequence]:
+        """
+        Search for a query in the index.
+        """
+        
         list_hitseqs: List[HitSequence] = []
         stack: Deque[HitSequence] = deque()
         
@@ -97,9 +101,12 @@ class Index:
         return list_hitseqs
     
     
-    def _oov_search(self,
+    def _search_gc(self,
                     query: Query,
-                    grapheme_confusion: GraphemeConfusions) -> List[HitSequence]:
+                    grapheme_confusion: GraphemeConfusion) -> List[HitSequence]:
+        """
+        Search for a query in the index with grapheme confusion.
+        """
         
         list_hitseqs: List[HitSequence]= []
         stack: Deque[HitSequence] = deque()
@@ -122,7 +129,7 @@ class Index:
                     continue  # If we cannot find a closest IV word, we skip this file.
                 
                 if closest_iv_word in self.index[file]:
-                    posterior = grapheme_confusion._similarity_prob(first_word, closest_iv_word)
+                    posterior = grapheme_confusion._similarity_score(first_word, closest_iv_word)
                     for first_word_metadata in self.index[file][closest_iv_word]:
                         first_word_metadata_posterior = _get_posterior_metadata(first_word_metadata, posterior)
                         stack.append(HitSequence([Hit.from_ctm_metadata(first_word_metadata_posterior)]))
@@ -155,11 +162,7 @@ class Index:
                 if closest_iv_word is None:
                     continue  # If we cannot find a closest IV word, we skip this file.
                 
-                if closest_iv_word is None:
-                    # Note: With the current implementation, this should never happen.
-                    continue
-                
-                posterior = grapheme_confusion._similarity_prob(w2, closest_iv_word)
+                posterior = grapheme_confusion._similarity_score(w2, closest_iv_word)
                 for first_word_metadata in self.index[current_file][closest_iv_word]:
                     w2_metadata_posterior = _get_posterior_metadata(first_word_metadata, posterior)
                     w2_hit = Hit.from_ctm_metadata(w2_metadata_posterior)
@@ -175,12 +178,12 @@ class Index:
                query: Query,
                normalize_scores: bool=False,
                gamma: float=1.0,
-               grapheme_confusion: Optional[GraphemeConfusions]=None) -> List[HitSequence]:
+               grapheme_confusion: Optional[GraphemeConfusion]=None) -> List[HitSequence]:
         
         if grapheme_confusion is None:
-            list_hitseqs = self._iv_search(query)
+            list_hitseqs = self._search(query)
         else:
-            list_hitseqs = self._oov_search(query, grapheme_confusion=grapheme_confusion)
+            list_hitseqs = self._search_gc(query, grapheme_confusion=grapheme_confusion)
         
         if normalize_scores:
             for hitseq in list_hitseqs:

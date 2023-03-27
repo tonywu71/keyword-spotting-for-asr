@@ -10,6 +10,13 @@ from kws.constants import MAX_SECONDS_INTERVAL
 
 
 class Hit:
+    """
+    A hit represents a word in a CTM file that matches a query word.
+    
+    Note that `Hit` share the same attributes as `CTM_metadata`.
+    This class was created to clearly separate the two concepts and to supercharge
+    the class with useful methods.
+    """
     def __init__(self,
                  file: str,
                  channel: int,
@@ -58,6 +65,12 @@ class Hit:
 
 
 class HitSequence:
+    """
+    A sequence of hits that can be aggregated.
+    
+    This class is used to aggregate hits that are close to each other
+    and that can be aggregated.
+    """
     def __init__(self, hits: List[Hit]):
         self.hits = hits
         self._aggregate_hits_init()

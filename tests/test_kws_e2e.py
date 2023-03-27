@@ -3,7 +3,7 @@ from typing import Dict, List
 import pytest
 
 from tqdm.auto import tqdm
-from kws.grapheme_confusion.grapheme_confusion import GraphemeConfusions
+from kws.grapheme_confusion.grapheme_confusion import GraphemeConfusion
 from kws.hit import HitSequence
 from kws.index import Index
 from kws.query import Queries
@@ -61,7 +61,7 @@ def test_e2e_index_search_score_normalization_all_1(queries: Queries, index: Ind
 
 
 def test_e2e_index_search_grapheme_confusion_all_1(queries: Queries, index: Index):
-    grapheme_confusion = GraphemeConfusions(
+    grapheme_confusion = GraphemeConfusion(
             grapheme_confusion_filepath=str(DEFAULT_GRAPHEME_CONFUSION_FILEPATH),
             ctm_filepath=DEFAULT_TEST_CTM_FILEPATH)
     

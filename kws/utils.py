@@ -19,12 +19,12 @@ def format_single_query(kwid: str, list_hitseq: List[HitSequence]):
     return output
 
 
-def format_all_queries(kws_to_hitseqs: Dict[str, List[HitSequence]]) -> str:
+def format_all_queries(kwid_to_hitseqs: Dict[str, List[HitSequence]]) -> str:
     output = ""
     
     output += HITS_FILE_HEADER
     
-    for kwid, list_hitseq in kws_to_hitseqs.items():
+    for kwid, list_hitseq in kwid_to_hitseqs.items():
         output += format_single_query(kwid, list_hitseq)
             
     output += HITS_FILE_FOOTER

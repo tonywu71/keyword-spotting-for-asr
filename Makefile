@@ -34,6 +34,14 @@ eval-decode:
 	&& scripts/termselect.sh lib/terms/ivoov.map output/decode.xml scoring oov
 
 
+eval-decode-grapheme_confusion:
+	rm -rf scoring/* \
+	&& scripts/score.sh output/decode-grapheme_confusion.xml scoring \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-grapheme_confusion.xml scoring all \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-grapheme_confusion.xml scoring iv \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-grapheme_confusion.xml scoring oov
+
+
 apply_morph_to_ctm:
 	python apply_morph_to_ctm.py lib/ctms/reference.ctm lib/dicts/morph.dct reference-morph.ctm
 
