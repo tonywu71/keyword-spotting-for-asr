@@ -11,38 +11,40 @@ class GraphemeConfusionBase:
     Assumes that all cost functions are unit cost.
     """
     
-    def _levenshtein_distance(self, s0: str, s1: str) -> float:
-        """Computes the weighted Levenshtein distance between two strings.
-        Cf https://en.wikipedia.org/wiki/Levenshtein_distance"""
-        # --------- EDGE CASE ---------
-        if s0 == s1:
-            return 0.
+    def _levenshtein_distance(self, word1: str, word2: str) -> float:
+        """Compute Levenshtein distance between two words."""
+        n1 = len(word1)
+        n2 = len(word2)
 
-        # --------- MAIN ---------
-        v0 = [0. for _ in range(len(s1)+1)]
-        v1 = [0. for _ in range(len(s1)+1)]
-
-        v0[0] = 0
-        for i in range(1, len(v0)):
-            v0[i] = v0[i - 1] + self._insertion_cost(s1[i - 1])
-
-        for i in range(len(s0)):
-            s0i = s0[i]
-            deletion_cost = self._deletion_cost(s0i)
-            v1[0] = v0[0] + deletion_cost
-
-            for j in range(len(s1)):
-                s1j = s1[j]
-                cost = 0
-                if s0i != s1j:
-                    cost = self._substitution_cost(s0i, s1j)
-                insertion_cost = self._insertion_cost(s1j)
-                v1[j + 1] = min(
-                    v1[j] + insertion_cost, v0[j + 1] + deletion_cost, v0[j] + cost
-                )
-            v0, v1 = v1, v0
-
-        return v0[len(s1)]
+        # Use backtracking to compute Levenshtein distance:
+        cache = {}
+        
+        def helper(p1, p2) -> int:
+            # --- CACHING ---
+            if (p1, p2) in cache:
+                return cache[(p1, p2)]
+            
+            # --- MAIN ---
+            if p1 == n1:
+                cache[(p1, p2)] = len(word2) - p2
+                return cache[(p1, p2)]
+            elif p2 == n2:
+                cache[(p1, p2)] = len(word1) - p1
+                return cache[(p1, p2)]
+            
+            else:
+                if word1[p1] == word2[p2]:
+                    cache[(p1, p2)] = helper(p1+1, p2+1)
+                    return cache[(p1, p2)]
+                else:
+                    cache[(p1, p2)] = min(
+                        helper(p1+1, p2) + self._deletion_cost(word1[p1]),
+                        helper(p1, p2+1) + self._insertion_cost(word2[p2]),
+                        helper(p1+1, p2+1) + self._substitution_cost(word1[p1], word2[p2])
+                    )
+                    return cache[(p1, p2)]
+        
+        return helper(p1=0, p2=0)
     
     
     def _insertion_cost(self, char: str) -> float:
