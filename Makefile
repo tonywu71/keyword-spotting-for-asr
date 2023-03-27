@@ -50,6 +50,14 @@ eval-decode:
 	&& scripts/termselect.sh lib/terms/ivoov.map output/decode.xml scoring oov
 
 
+eval-decode-morph:
+	rm -rf scoring/* \
+	&& scripts/score.sh output/decode-morph.xml scoring \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph.xml scoring all \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph.xml scoring iv \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph.xml scoring oov
+
+
 eval-decode-grapheme_confusion:
 	rm -rf scoring/* \
 	&& scripts/score.sh output/decode-grapheme_confusion.xml scoring \
