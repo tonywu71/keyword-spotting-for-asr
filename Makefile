@@ -6,6 +6,10 @@ score-reference-normalized:
 	python search.py lib/kws/queries.xml lib/ctms/reference.ctm reference-normalized.xml --normalize-scores
 
 
+score-reference-morph:
+	python search.py lib/kws/queries-morph.xml lib/ctms/reference-morph.ctm reference-morph.xml
+
+
 score-reference-grapheme_confusion:
 	python search.py lib/kws/queries.xml lib/ctms/reference.ctm reference-grapheme_confusion.xml --use-grapheme-confusion
 
@@ -16,6 +20,10 @@ score-reference-normalized-grapheme_confusion:
 
 score-decode:
 	python search.py lib/kws/queries.xml lib/ctms/decode.ctm decode.xml
+
+
+score-decode-morph:
+	python search.py lib/kws/queries-morph.xml lib/ctms/decode-morph.ctm decode-morph.xml
 
 
 eval-reference:
