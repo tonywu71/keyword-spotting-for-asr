@@ -43,6 +43,14 @@ eval-reference:
 	&& scripts/termselect.sh lib/terms/ivoov.map output/reference.xml scoring oov
 
 
+eval-reference-normalized:
+	rm -rf scoring/* \
+	&& scripts/score.sh output/reference-normalized.xml scoring \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/reference-normalized.xml scoring all \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/reference-normalized.xml scoring iv \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/reference-normalized.xml scoring oov
+
+
 eval-reference-grapheme_confusion:
 	rm -rf scoring/* \
 	&& scripts/score.sh output/reference-grapheme_confusion.xml scoring \

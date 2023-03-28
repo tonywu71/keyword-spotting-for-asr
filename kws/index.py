@@ -6,7 +6,7 @@ from pathlib import Path
 from collections import defaultdict
 from kws.grapheme_confusion.grapheme_confusion import GraphemeConfusion
 
-from kws.hit import Hit, HitSequence
+from kws.hit import Hit, HitSequence, normalize_scores_hitseqs
 from kws.query import Query
 from kws.kws_metadata import CTM_metadata
 
@@ -186,7 +186,6 @@ class Index:
             list_hitseqs = self._search_gc(query, grapheme_confusion=grapheme_confusion)
         
         if normalize_scores:
-            for hitseq in list_hitseqs:
-                hitseq.normalize_scores(gamma=gamma)
+            normalize_scores_hitseqs(list_hitseqs=list_hitseqs, gamma=gamma)
         
         return list_hitseqs

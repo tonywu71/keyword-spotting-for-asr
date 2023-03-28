@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Iterator, List, Optional
 import copy
+from numpy import prod
 
 import pandas as pd
 
@@ -155,9 +156,9 @@ class HitSequence:
         return copy.deepcopy(self)
 
     
-    def normalize_scores(self, gamma: float=1.0) -> None:
-        total_score = sum([hit.score ** gamma for hit in self.hits])
-        for hit in self.hits:
-            hit.score = hit.score ** gamma / total_score
-        self.score = 1.0
-        return
+def normalize_scores_hitseqs(list_hitseqs: List[HitSequence], gamma: float=1.0) -> None:
+    """Normalize the scores of a list of hit sequences. In-place operation."""
+    total_score = sum([hitseq.score ** gamma for hitseq in list_hitseqs])
+    for hitseq in list_hitseqs:
+        hitseq.score = hitseq.score ** gamma / total_score
+    return
