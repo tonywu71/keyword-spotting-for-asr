@@ -11,7 +11,7 @@ def queries() -> Queries:
 
 
 def test_queries_is_non_empty(queries: Queries):
-    assert queries.queries, "Queries is empty"
+    assert queries.kwid_to_list_queries, "Queries is empty"
 
 
 def test_queries_to_xml(queries: Queries):

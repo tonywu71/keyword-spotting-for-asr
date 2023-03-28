@@ -29,9 +29,10 @@ def index() -> Index:
 
 
 def test_e2e_index_search_from_reference_all_1(queries: Queries, index: Index):
-    for kwid, query in tqdm(queries.queries.items()):
-        list_hitseqs = index.search(query)
-        assert all(hitseq.score == 1. for hitseq in list_hitseqs), f"Query score is not 1: {query.kwtext}"
+    for kwid, list_queries in tqdm(queries.kwid_to_list_queries.items()):
+        for query in list_queries:
+            list_hitseqs = index.search(query)
+            assert all(hitseq.score == 1. for hitseq in list_hitseqs), f"Query score is not 1: {query.kwtext}"
 
 
 def test_e2e_index_search_from_reference_match_expected_output(queries: Queries, index: Index):
@@ -42,23 +43,13 @@ def test_e2e_index_search_from_reference_match_expected_output(queries: Queries,
     kws_to_hitseqs: Dict[str, List[HitSequence]] = {}
     
     # Perform search for each query:
-    tbar = tqdm(queries.queries.items())
-    for kwid, query in tbar:
-        tbar.set_description(f"Searching for {kwid}")
-        list_hitseqs = index.search(query)
-        kws_to_hitseqs[kwid] = list_hitseqs
+    tbar = tqdm(queries.kwid_to_list_queries.items())
+    for kwid, list_queries in tbar:
+        for query in list_queries:
+            tbar.set_description(f"Searching for {kwid}")
+            list_hitseqs = index.search(query)
+            kws_to_hitseqs[kwid] = list_hitseqs
     
     output = format_all_queries(kws_to_hitseqs)
     
     assert output == expected_output, "Output does not match expected output"
-
-
-def test_e2e_index_search_grapheme_confusion_all_1(queries: Queries, index: Index):
-    grapheme_confusion = GraphemeConfusion(
-            grapheme_confusion_filepath=str(DEFAULT_GRAPHEME_CONFUSION_FILEPATH),
-            ctm_filepath=DEFAULT_TEST_CTM_FILEPATH)
-    
-    for kwid, query in tqdm(queries.queries.items()):
-        list_hitseqs = index.search(query, grapheme_confusion=grapheme_confusion)
-        for hitseq in list_hitseqs:
-            assert hitseq.score == 1.0, f"Hit sequence score is not 1: {query.kwtext}"

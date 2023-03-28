@@ -46,7 +46,7 @@ def main(queries_filepath: str,
     
     # Perform search for each query:
     if n_job == 1:
-        tbar = tqdm(queries.queries.items())
+        tbar = tqdm(queries.kwid_to_list_queries.items())
         for kwid, query in tbar:
             tbar.set_description(f"Searching for {kwid}")
             list_hitseqs = index.search(query,
@@ -66,10 +66,10 @@ def main(queries_filepath: str,
         
         if n_job == -1:
             with Pool() as pool:
-                results = pool.imap_unordered(etl_fun, queries.queries.items())
+                results = pool.imap_unordered(etl_fun, queries.kwid_to_list_queries.items())
         else:
             with Pool(n_job) as pool:
-                results = pool.imap_unordered(etl_fun, queries.queries.items())
+                results = pool.imap_unordered(etl_fun, queries.kwid_to_list_queries.items())
         
         for kwid, list_hitseqs in results:
             kwid_to_hitseqs[kwid] = list_hitseqs

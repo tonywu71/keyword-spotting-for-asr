@@ -91,9 +91,12 @@ eval-decode-grapheme_confusion:
 	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-grapheme_confusion.xml scoring oov
 
 
+
+# ---- APPLY MORPH TRANSFORMATION ----
+
 apply_morph_to_ctm:
 	python apply_morph_to_ctm.py lib/ctms/reference.ctm lib/dicts/morph.dct reference-morph.ctm
 
 
-apply_morph_to_ctm:
+apply_morph_to_queries:
 	python apply_morph_to_queries.py lib/kws/queries.xml lib/dicts/morph.dct queries-morph.xml

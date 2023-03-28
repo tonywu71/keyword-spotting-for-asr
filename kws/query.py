@@ -1,5 +1,8 @@
 from typing import Dict, List
+from collections import defaultdict
 from pathlib import Path
+from textwrap import dedent, indent
+
 from bs4 import BeautifulSoup
 
 
@@ -22,7 +25,7 @@ class Query:
 
 class Queries:
     def __init__(self):
-        self.queries: Dict[str, Query] = {}
+        self.kwid_to_list_queries: Dict[str, List[Query]] = defaultdict(list)
 
 
     @staticmethod
@@ -34,7 +37,7 @@ class Queries:
         for kw in kws:
             kwid = kw.get("kwid")
             kwtext = kw.kwtext.text
-            queries.queries[kwid] = Query(kwid=kwid, kwtext=kwtext)
+            queries.kwid_to_list_queries[kwid].append(Query(kwid=kwid, kwtext=kwtext))
 
         return queries
 
@@ -55,19 +58,21 @@ class Queries:
     def from_list_of_queries(list_queries: List[Query]) -> "Queries":
         queries = Queries()
         for query in list_queries:
-            queries.queries[query.kwid] = query
+            queries.kwid_to_list_queries[query.kwid].append(query)
         return queries
     
     
     def to_xml(self, header: str=DEFAULT_HEADER, prettify: bool=False) -> str:
         xml = header + "\n"
         
-        for kwid, query in self.queries.items():
-            kwtext = " ".join(query.kwtext)
-            xml += f"""
-            <kw kwid="{kwid}">
-                <kwtext>{kwtext}</kwtext>
-            </kw>"""
+        for kwid, list_queries in self.kwid_to_list_queries.items():
+            for query in list_queries:
+                kwtext = " ".join(query.kwtext)
+                str_to_append = dedent(f"""\
+                <kw kwid="{kwid}">
+                    <kwtext>{kwtext}</kwtext>
+                </kw>""")
+                xml += indent(str_to_append, "\t") + "\n"
         
         xml += "\n</kwlist>\n"
         
