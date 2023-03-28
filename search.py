@@ -1,5 +1,6 @@
+from collections import defaultdict
 from multiprocessing import Pool
-from typing import Dict, List, Tuple
+from typing import DefaultDict, Dict, List, Tuple
 import typer
 
 from pathlib import Path
@@ -8,7 +9,7 @@ from kws.grapheme_confusion.grapheme_confusion import GraphemeConfusion
 from kws.hit import HitSequence
 
 from kws.index import Index
-from kws.query import Queries, Query
+from kws.query import Queries
 from kws.utils import format_all_queries
 
 
@@ -25,15 +26,14 @@ def main(queries_filepath: str,
          output_filename: str,
          normalize_scores: bool=False,
          gamma: float=1.0,
-         use_grapheme_confusion: bool=False,
-         n_job: int=1):
+         use_grapheme_confusion: bool=False):
     """
     Search for queries in CTM file and write output to file.
     """
     queries = Queries.from_file(queries_filepath)
     index = Index(ctm_filepath=ctm_filepath)
     
-    kwid_to_hitseqs: Dict[str, List[HitSequence]] = {}
+    kwid_to_hitseqs: DefaultDict[str, List[HitSequence]] = defaultdict(list)
     
     # If necessary, load grapheme confusion:
     if use_grapheme_confusion:
@@ -45,35 +45,15 @@ def main(queries_filepath: str,
     
     
     # Perform search for each query:
-    if n_job == 1:
-        tbar = tqdm(queries.kwid_to_list_queries.items())
-        for kwid, query in tbar:
-            tbar.set_description(f"Searching for {kwid}")
+    tbar = tqdm(queries.kwid_to_list_queries.items())
+    for kwid, list_queries in tbar:
+        tbar.set_description(f"Searching for {kwid}")
+        for query in list_queries:
             list_hitseqs = index.search(query,
                                         normalize_scores=normalize_scores,
                                         gamma=gamma,
                                         grapheme_confusion=grapheme_confusion)
-            kwid_to_hitseqs[kwid] = list_hitseqs
-    
-    else:
-        def etl_fun(x: Tuple[str, Query]) -> Tuple[str, List[HitSequence]]:
-            kwid, query = x
-            list_hitseqs = index.search(query,
-                                        normalize_scores=normalize_scores,
-                                        gamma=gamma,
-                                        grapheme_confusion=grapheme_confusion)
-            return kwid, list_hitseqs
-        
-        if n_job == -1:
-            with Pool() as pool:
-                results = pool.imap_unordered(etl_fun, queries.kwid_to_list_queries.items())
-        else:
-            with Pool(n_job) as pool:
-                results = pool.imap_unordered(etl_fun, queries.kwid_to_list_queries.items())
-        
-        for kwid, list_hitseqs in results:
-            kwid_to_hitseqs[kwid] = list_hitseqs
-    
+            kwid_to_hitseqs[kwid].extend(list_hitseqs)
     
     output = format_all_queries(kwid_to_hitseqs)
     

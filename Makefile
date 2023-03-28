@@ -32,6 +32,10 @@ score-decode-normalized:
 	python search.py lib/kws/queries.xml lib/ctms/decode.ctm decode-normalized.xml --normalize-scores
 
 
+score-decode-grapheme_confusion:
+	python search.py lib/kws/queries.xml lib/ctms/decode.ctm decode-grapheme_confusion.xml --use-grapheme-confusion
+
+
 
 # ---- EVALUATION ----
 

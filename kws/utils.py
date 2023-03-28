@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import DefaultDict, Dict, List
 from kws.hit import HitSequence
 
 HITS_FILE_HEADER = '<kwslist kwlist_filename="IARPA-babel202b-v1.0d_conv-dev.kwlist.xml" language="swahili" system_id="">\n'
@@ -19,7 +19,7 @@ def format_single_query(kwid: str, list_hitseq: List[HitSequence]):
     return output
 
 
-def format_all_queries(kwid_to_hitseqs: Dict[str, List[HitSequence]]) -> str:
+def format_all_queries(kwid_to_hitseqs: DefaultDict[str, List[HitSequence]]) -> str:
     output = ""
     
     output += HITS_FILE_HEADER

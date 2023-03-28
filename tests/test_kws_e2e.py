@@ -1,5 +1,6 @@
+from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List
+from typing import DefaultDict, Dict, List
 import pytest
 
 from tqdm.auto import tqdm
@@ -40,7 +41,7 @@ def test_e2e_index_search_from_reference_match_expected_output(queries: Queries,
     assert EXPECTED_OUTPUT_FILEPATH.is_file(), "Expected output file not found"
     expected_output = EXPECTED_OUTPUT_FILEPATH.read_text()
     
-    kws_to_hitseqs: Dict[str, List[HitSequence]] = {}
+    kws_to_hitseqs: DefaultDict[str, List[HitSequence]] = defaultdict(list)
     
     # Perform search for each query:
     tbar = tqdm(queries.kwid_to_list_queries.items())
@@ -48,7 +49,7 @@ def test_e2e_index_search_from_reference_match_expected_output(queries: Queries,
         for query in list_queries:
             tbar.set_description(f"Searching for {kwid}")
             list_hitseqs = index.search(query)
-            kws_to_hitseqs[kwid] = list_hitseqs
+            kws_to_hitseqs[kwid].extend(list_hitseqs)
     
     output = format_all_queries(kws_to_hitseqs)
     
