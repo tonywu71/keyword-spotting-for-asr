@@ -26,10 +26,16 @@ class GraphemeConfusionBase:
             
             # --- MAIN ---
             if p1 == n1:
-                cache[(p1, p2)] = len(word2) - p2
+                total_insertion_cost = 0
+                for char in word2[p2:]:
+                    total_insertion_cost += self._insertion_cost(char)
+                cache[(p1, p2)] = total_insertion_cost
                 return cache[(p1, p2)]
             elif p2 == n2:
-                cache[(p1, p2)] = len(word1) - p1
+                total_insertion_cost = 0
+                for char in word1[p1:]:
+                    total_insertion_cost += self._deletion_cost(char)
+                cache[(p1, p2)] = total_insertion_cost
                 return cache[(p1, p2)]
             
             else:

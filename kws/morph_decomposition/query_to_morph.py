@@ -6,15 +6,18 @@ from kws.query import Query, Queries
 
 
 def apply_morph_to_query(query: Query,
-                         word_to_morphs: Dict[str, List[str]]) -> List[Query]:
-    list_queries = []
+                         word_to_morphs: Dict[str, List[str]]) -> Query:
+    list_queries: List[Query] = []
+    
     for word in query.kwtext:
         if word not in word_to_morphs:
             list_queries.append(Query(kwid=query.kwid, kwtext=word))
         else:
             for morph in word_to_morphs[word]:
                 list_queries.append(Query(kwid=query.kwid, kwtext=morph))
-    return list_queries
+    
+    new_query = Query(kwid=query.kwid, kwtext=" ".join([" ".join(q.kwtext) for q in list_queries]))
+    return new_query
 
 
 def apply_morph_to_queries_file(queries_filepath: str,
@@ -29,8 +32,7 @@ def apply_morph_to_queries_file(queries_filepath: str,
     
     for kwid, list_queries in queries.kwid_to_list_queries.items():
         for query in list_queries:
-            list_new_queries.extend(
-                apply_morph_to_query(query, word_to_morphs=word_to_morphs))
+            list_new_queries.append(apply_morph_to_query(query, word_to_morphs=word_to_morphs))
     
     # Create new Queries object:
     new_queries = Queries.from_list_of_queries(list_new_queries)
