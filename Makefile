@@ -36,6 +36,14 @@ score-decode-normalized:
 	python search.py lib/kws/queries.xml lib/ctms/decode.ctm decode-normalized.xml --normalize-scores
 
 
+score-decode-morph-normalized:
+	python search.py lib/kws/queries-morph.xml lib/ctms/decode-morph.ctm decode-morph-normalized.xml --normalize-scores
+
+
+score-decode-morph-custom-normalized:
+	python search.py lib/kws/queries-morph.xml lib/ctms/decode-morph-custom.ctm decode-morph-custom-normalized.xml --normalize-scores
+
+
 score-decode-grapheme_confusion:
 	python search.py lib/kws/queries.xml lib/ctms/decode.ctm decode-grapheme_confusion.xml --use-grapheme-confusion
 
@@ -109,6 +117,22 @@ eval-decode-normalized:
 	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-normalized.xml scoring all \
 	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-normalized.xml scoring iv \
 	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-normalized.xml scoring oov
+
+
+eval-decode-morph-normalized:
+	rm -rf scoring/* \
+	&& scripts/score.sh output/decode-morph-normalized.xml scoring \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph-normalized.xml scoring all \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph-normalized.xml scoring iv \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph-normalized.xml scoring oov
+
+
+eval-decode-morph-custom-normalized:
+	rm -rf scoring/* \
+	&& scripts/score.sh output/decode-morph-custom-normalized.xml scoring \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph-custom-normalized.xml scoring all \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph-custom-normalized.xml scoring iv \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph-custom-normalized.xml scoring oov
 
 
 eval-decode-grapheme_confusion:

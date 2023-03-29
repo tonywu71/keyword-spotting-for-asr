@@ -101,7 +101,8 @@ class GraphemeConfusion(GraphemeConfusionBase):
         max_length = max(len(s0), len(s1))
         if max_length == 0:
             return 0.0
-        return 1.0 - self._levenshtein_distance(s0, s1) / max_length
+        # Note: We have to divide the distance by the max length to make the Levenshtein distance output a value in [0, 1].
+        return 1.0 - (self._levenshtein_distance(s0, s1) / max_length)
     
     
     # --------- COST FUNCTIONS ---------
