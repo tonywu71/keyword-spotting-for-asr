@@ -11,15 +11,15 @@
 |                        Value |                                                                                1 |
 |                        Ptarg |                                                                           0.0001 |
 |                         Cost |                                                                           0.1000 |
-|            Combined DET Plot |                                                        /tmp/xcJH_xOGmJ/merge.png |
+|            Combined DET Plot |                                                        /tmp/SfcT7yTuEK/merge.png |
 
 
 |              |                  Inputs                  |                               Actual Decision TWV Analysis                                |              Maximum TWV Analysis               |                                              DET Curve Graphs                                              |
 |    Title     |  #Keyword  |  #Targ  |  #NTarg  |  #Sys  |  #CorDet  |  #Cor!Det  |  #FA  |  #Miss  |    PFA    |  PMiss   |   TWV    |  Dec. Tresh  |    PFA    |  PMiss   |   TWV    |  Dec. Thresh  |                    DET Curve                     |                     Threshold Curve                     |
 |--------------+------------+---------+----------+--------+-----------+------------+-------+---------+-----------+----------+----------+--------------+-----------+----------+----------+---------------+--------------------------------------------------+---------------------------------------------------------+
-|   Occurrence |        488 |     963 |      650 |   1067 |       417 |          0 |   650 |     546 |   0.00004 |    0.652 |   0.3113 |       0.0370 |   0.00004 |    0.652 |   0.3114 |         0.066 |   /tmp/xcJH_xOGmJ/merge.Occurrencescoring_de.png |   /tmp/xcJH_xOGmJ/merge.Occurrencescoring_de.thresh.png |
+|   Occurrence |        488 |     963 |      195 |   1158 |       963 |          0 |   195 |       0 |   0.00001 |    0.000 |   0.9889 |       0.6728 |   0.00000 |    0.000 |   0.9978 |         1.000 |   /tmp/SfcT7yTuEK/merge.Occurrencescoring_re.png |   /tmp/SfcT7yTuEK/merge.Occurrencescoring_re.thresh.png |
 
 
-all TWV=0.311011793386078 theshold=0.066 number=488
-iv TWV=0.386590037961802 theshold=0.066 number=388
-oov TWV=0.0177682044322731 theshold=0.066 number=100
+all TWV=0.997770470372518 theshold=1.000 number=488
+iv TWV=0.998130557529754 theshold=1.000 number=388
+oov TWV=0.996373332202444 theshold=1.000 number=100

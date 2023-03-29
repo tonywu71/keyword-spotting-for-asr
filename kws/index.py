@@ -112,11 +112,11 @@ class Index:
         stack: Deque[HitSequence] = deque()
         
         # Wrap grapheme_confusion.get_closest_iv_word to implement caching in order speed up search:
-        cache: DefaultDict[str, Dict[str, Optional[str]]] = defaultdict(dict)
-        def get_closest_iv_word(word: str, file: str) -> Optional[str]:
-            if file not in cache or word not in cache[file]:
-                cache[file][word] = grapheme_confusion.get_closest_iv_word(oov_word=word, subset=set(self.index[file].keys()))
-            return cache[file][word]
+        cache: Dict[str, Optional[str]] = {}
+        def get_closest_iv_word(oov_word: str) -> Optional[str]:
+            if oov_word not in cache:
+                cache[oov_word] = grapheme_confusion.get_closest_iv_word(oov_word=oov_word)
+            return cache[oov_word]
         
         
         # Initialize stack with first word:
@@ -128,7 +128,7 @@ class Index:
                     stack.append(HitSequence([Hit.from_ctm_metadata(first_word_metadata)]))
             
             else:  # If first word is OOV, we try to find it with grapheme confusion:
-                closest_iv_word = get_closest_iv_word(first_word, file)
+                closest_iv_word = get_closest_iv_word(oov_word=first_word)
                 
                 if closest_iv_word is None:
                     continue  # If we cannot find a closest IV word, we skip this file.
@@ -164,7 +164,7 @@ class Index:
             
             else:
                 # If w2 is OOV, we try to find it with grapheme confusion:
-                closest_iv_word = get_closest_iv_word(w2, current_file)
+                closest_iv_word = get_closest_iv_word(oov_word=w2)
                 
                 if closest_iv_word is None or closest_iv_word != w1_hit.next_word_in_ctm:
                     continue  # If we cannot find a closest IV word OR if the closest IV word is not the next word in the query at hand, skip.
