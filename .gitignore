@@ -1,6 +1,8 @@
 # Custom
-scoring/
 .DS_Store
+scoring/
+lib/ctms/decode-morph.ctm
+
 
 
 # Byte-compiled / optimized / DLL files
