@@ -157,7 +157,8 @@ class HitSequence:
 
     
 def normalize_scores_hitseqs(list_hitseqs: List[HitSequence], gamma: float=1.0) -> None:
-    """Normalize the scores of a list of hit sequences. In-place operation."""
+    """Normalize the scores of a list of hit sequences according to the Sum-To-One (STO)
+    normalisation. In-place operation."""
     total_score = sum([hitseq.score ** gamma for hitseq in list_hitseqs])
     for hitseq in list_hitseqs:
         hitseq.score = hitseq.score ** gamma / total_score
