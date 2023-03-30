@@ -1,0 +1,25 @@
+|                                Performance Summary Over and Ensemble of Subsets                                 |
+|             Key              |                                      Value                                       |
+|------------------------------+----------------------------------------------------------------------------------+
+|                 System Title |   Occurrence scoring, Full Submission, Original orthography, MITLL Force Ali. V3 |
+|                  Decision ID |                                                                       Occurrence |
+|                    TotTrials |                                                                            35843 |
+|   IncludeBlocksWithNoTargets |                                                                                0 |
+|              TrialsPerSecond |                                                                                1 |
+|                       TotDur |                                                                       35842.9925 |
+|                         BETA |                                                                            999.9 |
+|                        Value |                                                                                1 |
+|                        Ptarg |                                                                           0.0001 |
+|                         Cost |                                                                           0.1000 |
+|            Combined DET Plot |                                                        /tmp/4FXWG06M4K/merge.png |
+
+
+|              |                  Inputs                  |                               Actual Decision TWV Analysis                                |              Maximum TWV Analysis               |                                              DET Curve Graphs                                              |
+|    Title     |  #Keyword  |  #Targ  |  #NTarg  |  #Sys  |  #CorDet  |  #Cor!Det  |  #FA  |  #Miss  |    PFA    |  PMiss   |   TWV    |  Dec. Tresh  |    PFA    |  PMiss   |   TWV    |  Dec. Thresh  |                    DET Curve                     |                     Threshold Curve                     |
+|--------------+------------+---------+----------+--------+-----------+------------+-------+---------+-----------+----------+----------+--------------+-----------+----------+----------+---------------+--------------------------------------------------+---------------------------------------------------------+
+|   Occurrence |        488 |     963 |      317 |   1175 |       858 |          0 |   317 |     105 |   0.00002 |    0.205 |   0.7770 |       1.0000 |   0.00002 |    0.205 |   0.7770 |         1.000 |   /tmp/4FXWG06M4K/merge.Occurrencescoring_re.png |   /tmp/4FXWG06M4K/merge.Occurrencescoring_re.thresh.png |
+
+
+all TWV=0.776958769375798 theshold=1.000 number=488
+iv TWV=0.957306324488028 theshold=1.000 number=388
+oov TWV=0.0772102555403414 theshold=1.000 number=100

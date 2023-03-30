@@ -1,12 +1,12 @@
-from typing import DefaultDict, Deque, List, Optional
+from typing import DefaultDict, Deque, Dict, List, Optional
 from collections import deque
 
 from pathlib import Path
 
 from collections import defaultdict
-from kws.grapheme_confusion.grapheme_confusion import GraphemeConfusions
+from kws.grapheme_confusion.grapheme_confusion import GraphemeConfusion
 
-from kws.hit import Hit, HitSequence
+from kws.hit import Hit, HitSequence, normalize_scores_hitseqs
 from kws.query import Query
 from kws.kws_metadata import CTM_metadata
 
@@ -18,12 +18,12 @@ def preprocess_word(data: str):
 
 
 def decode_ctm_line(ctm_line: str, next_word: Optional[str]=None) -> CTM_metadata:
-    try:
-        file, channel, tbeg, dur, word, score = ctm_line.strip("\n").split()
-        word = preprocess_word(word)
-        ctm_metadata = CTM_metadata(file, int(channel), float(tbeg), float(dur), word, float(score), next_word=next_word)
-    except:
-        raise ValueError(f"Error while generating index -> Invalid CTM line: {ctm_line}")
+# try:
+    file, channel, tbeg, dur, word, score = ctm_line.strip("\n").split()
+    word = preprocess_word(word)
+    ctm_metadata = CTM_metadata(file, int(channel), float(tbeg), float(dur), word, float(score), next_word=next_word)
+    # except:
+    #     raise ValueError(f"Error while generating index -> Invalid CTM line: {ctm_line}")
     return ctm_metadata
 
 
@@ -59,7 +59,11 @@ class Index:
         return index
     
     
-    def _iv_search(self, query: Query) -> List[HitSequence]:
+    def _search(self, query: Query) -> List[HitSequence]:
+        """
+        Search for a query in the index.
+        """
+        
         list_hitseqs: List[HitSequence] = []
         stack: Deque[HitSequence] = deque()
         
@@ -87,7 +91,7 @@ class Index:
             if w2 == w1_hit.next_word_in_ctm:  # Note: This condition implies (w2 in self.index[current_file]) but the reciprocal is not necessarily true.
                 for w2_metadata in self.index[current_file][w2]:
                     w2_hit = Hit.from_ctm_metadata(w2_metadata)
-                    if w2_hit.tbeg > w1_hit.tbeg and w2_hit.tbeg - (w1_hit.tbeg + w1_hit.dur) <= MAX_SECONDS_INTERVAL:  # allow overlap
+                    if w2_hit.tbeg >= w1_hit.tbeg and w2_hit.tbeg - (w1_hit.tbeg + w1_hit.dur) <= MAX_SECONDS_INTERVAL:  # allow overlap
                         hitseq_ = hitseq.copy()
                         hitseq_.append(w2_hit)
                         stack.append(hitseq_)
@@ -97,32 +101,40 @@ class Index:
         return list_hitseqs
     
     
-    def _oov_search(self,
-                    query: Query,
-                    grapheme_confusion: GraphemeConfusions) -> List[HitSequence]:
+    def _search_gc(self,
+                   query: Query,
+                   grapheme_confusion: GraphemeConfusion) -> List[HitSequence]:
+        """
+        Search for a query in the index with grapheme confusion.
+        """
         
         list_hitseqs: List[HitSequence]= []
         stack: Deque[HitSequence] = deque()
+        
+        # Wrap grapheme_confusion.get_closest_iv_word to implement caching in order speed up search:
+        cache: Dict[str, Optional[str]] = {}
+        def get_closest_iv_word(oov_word: str) -> Optional[str]:
+            if oov_word not in cache:
+                cache[oov_word] = grapheme_confusion.get_closest_iv_word(oov_word=oov_word)
+            return cache[oov_word]
+        
         
         # Initialize stack with first word:
         first_word = query.kwtext[0]
         
         for file in self.index.keys():
-            
             if first_word in self.index[file]:
                 for first_word_metadata in self.index[file][first_word]:
                     stack.append(HitSequence([Hit.from_ctm_metadata(first_word_metadata)]))
             
             else:  # If first word is OOV, we try to find it with grapheme confusion:
-                closest_iv_word = None
-                while closest_iv_word not in self.index[file]:
-                    closest_iv_word = grapheme_confusion.get_closest_iv_word(first_word, subset=set(self.index[file].keys()))
+                closest_iv_word = get_closest_iv_word(oov_word=first_word)
                 
                 if closest_iv_word is None:
                     continue  # If we cannot find a closest IV word, we skip this file.
                 
                 if closest_iv_word in self.index[file]:
-                    posterior = grapheme_confusion._similarity_prob(first_word, closest_iv_word)
+                    posterior = grapheme_confusion._similarity_score(first_word, closest_iv_word)
                     for first_word_metadata in self.index[file][closest_iv_word]:
                         first_word_metadata_posterior = _get_posterior_metadata(first_word_metadata, posterior)
                         stack.append(HitSequence([Hit.from_ctm_metadata(first_word_metadata_posterior)]))
@@ -143,30 +155,29 @@ class Index:
             w2 = query.kwtext[next_idx]
             
             if w2 == w1_hit.next_word_in_ctm:  # Note: This condition implies (w2 in self.index[current_file]) but the reciprocal is not necessarily true.
-                for first_word_metadata in self.index[current_file][w2]:
-                    w2_hit = Hit.from_ctm_metadata(first_word_metadata)
-                    if w2_hit.tbeg > w1_hit.tbeg and w2_hit.tbeg - (w1_hit.tbeg + w1_hit.dur) <= MAX_SECONDS_INTERVAL:  # allow overlap
+                for w2_metadata in self.index[current_file][w2]:
+                    w2_hit = Hit.from_ctm_metadata(w2_metadata)
+                    if w2_hit.tbeg >= w1_hit.tbeg and w2_hit.tbeg - (w1_hit.tbeg + w1_hit.dur) <= MAX_SECONDS_INTERVAL:  # allow overlap
                         hitseq_ = hitseq.copy()
                         hitseq_.append(w2_hit)
                         stack.append(hitseq_)
             
             else:
-                closest_iv_word = grapheme_confusion.get_closest_iv_word(first_word, subset=set(self.index[w1_hit.file].keys()))
-                if closest_iv_word is None:
-                    continue  # If we cannot find a closest IV word, we skip this file.
+                # If w2 is OOV, we try to find it with grapheme confusion:
+                closest_iv_word = get_closest_iv_word(oov_word=w2)
                 
-                if closest_iv_word is None:
-                    # Note: With the current implementation, this should never happen.
-                    continue
+                if closest_iv_word is None or closest_iv_word != w1_hit.next_word_in_ctm:
+                    continue  # If we cannot find a closest IV word OR if the closest IV word is not the next word in the query at hand, skip.
                 
-                posterior = grapheme_confusion._similarity_prob(w2, closest_iv_word)
-                for first_word_metadata in self.index[current_file][closest_iv_word]:
-                    w2_metadata_posterior = _get_posterior_metadata(first_word_metadata, posterior)
-                    w2_hit = Hit.from_ctm_metadata(w2_metadata_posterior)
-                    if w2_hit.tbeg > w1_hit.tbeg and w2_hit.tbeg - (w1_hit.tbeg + w1_hit.dur) <= MAX_SECONDS_INTERVAL:  # allow overlap
-                        hitseq_ = hitseq.copy()
-                        hitseq_.append(w2_hit)
-                        stack.append(hitseq_)
+                else:  # Note: Necessarily we have closest_iv_word in self.index[current_file]
+                    posterior = grapheme_confusion._similarity_score(w2, closest_iv_word)
+                    for w2_metadata in self.index[current_file][closest_iv_word]:
+                        w2_metadata_posterior = _get_posterior_metadata(w2_metadata, posterior=posterior)
+                        w2_hit = Hit.from_ctm_metadata(w2_metadata_posterior)
+                        if w2_hit.tbeg >= w1_hit.tbeg and w2_hit.tbeg - (w1_hit.tbeg + w1_hit.dur) <= MAX_SECONDS_INTERVAL:  # allow overlap
+                            hitseq_ = hitseq.copy()
+                            hitseq_.append(w2_hit)
+                            stack.append(hitseq_)
         
         return list_hitseqs
     
@@ -175,15 +186,14 @@ class Index:
                query: Query,
                normalize_scores: bool=False,
                gamma: float=1.0,
-               grapheme_confusion: Optional[GraphemeConfusions]=None) -> List[HitSequence]:
+               grapheme_confusion: Optional[GraphemeConfusion]=None) -> List[HitSequence]:
         
         if grapheme_confusion is None:
-            list_hitseqs = self._iv_search(query)
+            list_hitseqs = self._search(query)
         else:
-            list_hitseqs = self._oov_search(query, grapheme_confusion=grapheme_confusion)
+            list_hitseqs = self._search_gc(query, grapheme_confusion=grapheme_confusion)
         
         if normalize_scores:
-            for hitseq in list_hitseqs:
-                hitseq.normalize_scores(gamma=gamma)
+            normalize_scores_hitseqs(list_hitseqs=list_hitseqs, gamma=gamma)
         
         return list_hitseqs

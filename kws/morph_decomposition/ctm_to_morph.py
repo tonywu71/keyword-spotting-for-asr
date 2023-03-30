@@ -19,14 +19,13 @@ def apply_morph_to_ctm_metadata(ctm_metadata: CTM_metadata,
 
     # Common metadata for all morphs:
     morph_dur = ctm_metadata.dur / len(morphs)
-    morph_tbeg = ctm_metadata.tbeg
     morph_score = ctm_metadata.score ** (1 / len(morphs))
     
     # Iterate over morphs:
-    for morph in morphs:
+    for idx, morph in enumerate(morphs):
         list_new_ctm_metadata.append(CTM_metadata(file=ctm_metadata.file,
                                                   channel=ctm_metadata.channel,
-                                                  tbeg=morph_tbeg,
+                                                  tbeg=ctm_metadata.tbeg+(idx*morph_dur),
                                                   dur=morph_dur,
                                                   word=morph,
                                                   score=morph_score)

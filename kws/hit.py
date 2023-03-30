@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Iterator, List, Optional
 import copy
+from numpy import prod
 
 import pandas as pd
 
@@ -10,6 +11,13 @@ from kws.constants import MAX_SECONDS_INTERVAL
 
 
 class Hit:
+    """
+    A hit represents a word in a CTM file that matches a query word.
+    
+    Note that `Hit` share the same attributes as `CTM_metadata`.
+    This class was created to clearly separate the two concepts and to supercharge
+    the class with useful methods.
+    """
     def __init__(self,
                  file: str,
                  channel: int,
@@ -58,6 +66,12 @@ class Hit:
 
 
 class HitSequence:
+    """
+    A sequence of hits that can be aggregated.
+    
+    This class is used to aggregate hits that are close to each other
+    and that can be aggregated.
+    """
     def __init__(self, hits: List[Hit]):
         self.hits = hits
         self._aggregate_hits_init()
@@ -142,9 +156,10 @@ class HitSequence:
         return copy.deepcopy(self)
 
     
-    def normalize_scores(self, gamma: float=1.0) -> None:
-        total_score = sum([hit.score ** gamma for hit in self.hits])
-        for hit in self.hits:
-            hit.score = hit.score ** gamma / total_score
-        self.score = 1.0
-        return
+def normalize_scores_hitseqs(list_hitseqs: List[HitSequence], gamma: float=1.0) -> None:
+    """Normalize the scores of a list of hit sequences according to the Sum-To-One (STO)
+    normalisation. In-place operation."""
+    total_score = sum([hitseq.score ** gamma for hitseq in list_hitseqs])
+    for hitseq in list_hitseqs:
+        hitseq.score = hitseq.score ** gamma / total_score
+    return

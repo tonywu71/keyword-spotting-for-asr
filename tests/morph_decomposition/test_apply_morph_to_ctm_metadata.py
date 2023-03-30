@@ -1,5 +1,5 @@
 from kws.kws_metadata import CTM_metadata
-from kws.morph_decomposition.ctm_to_morph import load_morph_dict, apply_morph_to_ctm_metadata
+from kws.morph_decomposition.ctm_to_morph import apply_morph_to_ctm_metadata
 
 
 
