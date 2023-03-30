@@ -52,6 +52,14 @@ score-decode-normalized-grapheme_confusion:
 	python search.py lib/kws/queries.xml lib/ctms/decode.ctm decode-normalized-grapheme_confusion.xml --normalize-scores --use-grapheme-confusion
 
 
+score-decode-morph-grapheme_confusion:
+	python search.py lib/kws/queries-morph.xml lib/ctms/decode.ctm decode-morph-grapheme_confusion.xml --use-grapheme-confusion
+
+
+score-decode-morph-normalized-grapheme_confusion:
+	python search.py lib/kws/queries-morph.xml lib/ctms/decode.ctm decode-morph-normalized-grapheme_confusion.xml --normalize-scores --use-grapheme-confusion
+
+
 
 # ---- EVALUATION ----
 
@@ -149,6 +157,22 @@ eval-decode-normalized-grapheme_confusion:
 	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-normalized-grapheme_confusion.xml scoring all \
 	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-normalized-grapheme_confusion.xml scoring iv \
 	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-normalized-grapheme_confusion.xml scoring oov
+
+
+eval-decode-morph-grapheme_confusion:
+	rm -rf scoring/* \
+	&& scripts/score.sh output/decode-morph-grapheme_confusion.xml scoring \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph-grapheme_confusion.xml scoring all \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph-grapheme_confusion.xml scoring iv \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph-grapheme_confusion.xml scoring oov
+
+
+eval-decode-morph-normalized-grapheme_confusion:
+	rm -rf scoring/* \
+	&& scripts/score.sh output/decode-morph-normalized-grapheme_confusion.xml scoring \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph-normalized-grapheme_confusion.xml scoring all \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph-normalized-grapheme_confusion.xml scoring iv \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/decode-morph-normalized-grapheme_confusion.xml scoring oov
 
 
 
