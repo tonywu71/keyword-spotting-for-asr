@@ -1,15 +1,13 @@
 from collections import defaultdict
 from pathlib import Path
-from typing import DefaultDict, Dict, List
+from typing import DefaultDict, List
 import pytest
 
 from tqdm.auto import tqdm
-from kws.grapheme_confusion.grapheme_confusion import GraphemeConfusion
 from kws.hit import HitSequence
 from kws.index import Index
 from kws.query import Queries
 from kws.utils import format_all_queries
-from search import DEFAULT_GRAPHEME_CONFUSION_FILEPATH
 
 DEFAULT_TEST_QUERIES_FILEPATH = "lib/kws/queries.xml"
 DEFAULT_TEST_CTM_FILEPATH = "lib/ctms/reference.ctm"

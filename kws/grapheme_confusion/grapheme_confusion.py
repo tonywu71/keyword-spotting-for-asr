@@ -69,6 +69,8 @@ class GraphemeConfusionBase:
 
 
 class GraphemeConfusion(GraphemeConfusionBase):
+    """Class that implements grapheme confusion."""
+    
     def __init__(self,
                  grapheme_confusion_filepath: str,
                  ctm_filepath: str):

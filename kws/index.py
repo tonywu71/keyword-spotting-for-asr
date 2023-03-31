@@ -18,12 +18,12 @@ def preprocess_word(data: str):
 
 
 def decode_ctm_line(ctm_line: str, next_word: Optional[str]=None) -> CTM_metadata:
-# try:
-    file, channel, tbeg, dur, word, score = ctm_line.strip("\n").split()
-    word = preprocess_word(word)
-    ctm_metadata = CTM_metadata(file, int(channel), float(tbeg), float(dur), word, float(score), next_word=next_word)
-    # except:
-    #     raise ValueError(f"Error while generating index -> Invalid CTM line: {ctm_line}")
+    try:
+        file, channel, tbeg, dur, word, score = ctm_line.strip("\n").split()
+        word = preprocess_word(word)
+        ctm_metadata = CTM_metadata(file, int(channel), float(tbeg), float(dur), word, float(score), next_word=next_word)
+    except:
+        raise ValueError(f"Error while generating index -> Invalid CTM line: {ctm_line}")
     return ctm_metadata
 
 
