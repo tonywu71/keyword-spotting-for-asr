@@ -11,7 +11,6 @@ class DetectedKW():
     channel: int
     tbeg: float
     dur: float
-    word: str
     score: float
     decision: bool
     

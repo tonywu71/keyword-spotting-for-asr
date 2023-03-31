@@ -20,15 +20,14 @@ def parse_output_xml(filepath: str) -> Dict[str, DetectedKWList]:
         oov_count = int(detected_kwlist['oov_count'])
         search_time = float(detected_kwlist['search_time'])
         list_kw = []
-        for kw in detected_kwlist.find_all('kw'):
+        for kw in detected_kwlist.find_all('kw'):            
             file = kw['file']
             channel = int(kw['channel'])
             tbeg = float(kw['tbeg'])
             dur = float(kw['dur'])
-            word = kw['word']
             score = float(kw['score'])
-            decision = True if kw['decision'] == 'true' else False
-            detected_kw = DetectedKW(file=file, channel=channel, tbeg=tbeg, dur=dur, word=word, score=score, decision=decision)
+            decision = True if kw['decision'] == 'YES' else False
+            detected_kw = DetectedKW(file=file, channel=channel, tbeg=tbeg, dur=dur, score=score, decision=decision)
             list_kw.append(detected_kw)
         detected_kwlist = DetectedKWList(kwid=kwid, oov_count=oov_count, search_time=search_time, list_kw=list_kw)
         detected_kwlists_dict[kwid] = detected_kwlist

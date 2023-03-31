@@ -27,7 +27,8 @@ def main(list_xml_filepath: List[str]) -> None:
         for kwid, detected_kwlist in combined_kwlists.items():
             f.write(f'  <kw kwid="{kwid}" oov_count="{detected_kwlist.oov_count}" search_time="{detected_kwlist.search_time}">\n')
             for kw in detected_kwlist.list_kw:
-                f.write(f'    <kw file="{kw.file}" channel="{kw.channel}" tbeg="{kw.tbeg}" dur="{kw.dur}" word="{kw.word}" score="{kw.score}" decision="{kw.decision}"/>\n')
+                decision = "YES" if kw.decision else "NO"
+                f.write(f'    <kw file="{kw.file}" channel="{kw.channel}" tbeg="{kw.tbeg}" dur="{kw.dur}" score="{kw.score}" decision="{decision}"/>\n')
             f.write('  </kw>\n')
         f.write('</kwlist>')
 
