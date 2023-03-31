@@ -53,11 +53,11 @@ score-decode-normalized-grapheme_confusion:
 
 
 score-decode-morph-grapheme_confusion:
-	python search.py lib/kws/queries-morph.xml lib/ctms/decode.ctm decode-morph-grapheme_confusion.xml --use-grapheme-confusion
+	python search.py lib/kws/queries-morph.xml lib/ctms/decode-morph.ctm decode-morph-grapheme_confusion.xml --use-grapheme-confusion
 
 
 score-decode-morph-normalized-grapheme_confusion:
-	python search.py lib/kws/queries-morph.xml lib/ctms/decode.ctm decode-morph-normalized-grapheme_confusion.xml --normalize-scores --use-grapheme-confusion
+	python search.py lib/kws/queries-morph.xml lib/ctms/decode-morph.ctm decode-morph-normalized-grapheme_confusion.xml --normalize-scores --use-grapheme-confusion
 
 
 
