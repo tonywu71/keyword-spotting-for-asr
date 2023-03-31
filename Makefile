@@ -188,7 +188,15 @@ apply_morph_to_queries:
 
 
 
-# ---- APPLY SYSTEM COMBINATION ----
+# ---- APPLY AND EVAL SYSTEM COMBINATION ----
 
 apply_system_combination:
 	python apply_system_combination.py output/decode.xml output/decode-grapheme_confusion.xml output/decode-normalized-grapheme_confusion.xml
+
+
+eval-system_combination:
+	rm -rf scoring/* \
+	&& scripts/score.sh output/system_combination.xml scoring \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/system_combination.xml scoring all \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/system_combination.xml scoring iv \
+	&& scripts/termselect.sh lib/terms/ivoov.map output/system_combination.xml scoring oov
