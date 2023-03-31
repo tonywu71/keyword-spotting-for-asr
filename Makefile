@@ -185,3 +185,10 @@ apply_morph_to_ctm:
 
 apply_morph_to_queries:
 	python apply_morph_to_queries.py lib/kws/queries.xml lib/dicts/morph.kwslist.dct queries-morph.xml
+
+
+
+# ---- APPLY SYSTEM COMBINATION ----
+
+apply_system_combination:
+	python apply_system_combination.py output/decode.xml output/decode-grapheme_confusion.xml output/decode-normalized-grapheme_confusion.xml
